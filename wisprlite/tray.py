@@ -49,24 +49,24 @@ class Tray:
         def engine_item(name, label):
             return Item(
                 label,
-                lambda i, it, n=name: app.set_engine(n),
-                checked=lambda it, n=name: app.cfg.engine == n,
+                lambda icon, item: app.set_engine(name),
+                checked=lambda item: app.cfg.engine == name,
                 radio=True,
             )
 
         def mode_item(name, label):
             return Item(
                 label,
-                lambda i, it, n=name: app.set_mode(n),
-                checked=lambda it, n=name: app.cfg.mode == n,
+                lambda icon, item: app.set_mode(name),
+                checked=lambda item: app.cfg.mode == name,
                 radio=True,
             )
 
         def output_item(name, label):
             return Item(
                 label,
-                lambda i, it, n=name: app.set_output(n),
-                checked=lambda it, n=name: app.cfg.output_mode == n,
+                lambda icon, item: app.set_output(name),
+                checked=lambda item: app.cfg.output_mode == name,
                 radio=True,
             )
 
