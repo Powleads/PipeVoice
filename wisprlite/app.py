@@ -4,6 +4,7 @@ tray icon and the live overlay. State machine: idle -> recording -> transcribing
 
 from __future__ import annotations
 
+import logging
 import sys
 import threading
 import time
@@ -14,6 +15,8 @@ from .hotkey import HotkeyManager
 from .overlay import Overlay
 from .tray import Tray
 from .typer import type_text
+
+log = logging.getLogger("wisprlite")
 
 try:
     import winsound  # Windows audio cues
@@ -91,6 +94,7 @@ class App:
             self._session = engine.start_session(on_partial=self.overlay.set_text)
         except Exception as exc:
             self._session = None
+            log.exception("could not start session (engine=%s)", self.cfg.engine)
             self._fail(str(exc))
             self._release()
             return
@@ -120,6 +124,7 @@ class App:
             try:
                 text = self._session.finish(audio) if self._session else ""
             except Exception as exc:
+                log.exception("transcription failed (engine=%s)", self.cfg.engine)
                 text = self._fallback(audio, exc)
 
             text = (text or "").strip()
@@ -285,7 +290,7 @@ class App:
         self.tray.set_state(state)
 
     def _fail(self, msg: str) -> None:
-        print("WisprLite error:", msg, file=sys.stderr)
+        log.error("WisprLite error: %s", msg)
         self._beep(220, 200)
         self.overlay.set_state("error", msg[:80])
         self.tray.set_state("error")
@@ -340,8 +345,25 @@ class App:
             self.quit()
 
 
+def _setup_logging() -> None:
+    try:
+        logging.basicConfig(
+            filename=str(config.config_dir() / "wisprlite.log"),
+            level=logging.INFO,
+            format="%(asctime)s %(levelname)s %(message)s",
+        )
+    except Exception:
+        pass
+
+
 def main() -> None:
-    App().run()
+    _setup_logging()
+    log.info("WisprLite starting (engine=%s)", config.Config.load().engine)
+    try:
+        App().run()
+    except Exception:
+        log.exception("fatal error")
+        raise
 
 
 if __name__ == "__main__":
