@@ -19,7 +19,12 @@ git config user.email "james@powleads.com"
 git config user.name "Powleads"
 
 git add -A
-git commit -m "WisprLite"
+echo.
+echo === Files that will be pushed: ===
+git status --short
+echo ==================================
+echo.
+git commit -m "WisprLite update"
 git branch -M main
 git remote remove origin 2>nul
 git remote add origin https://github.com/Powleads/wisprlite.git

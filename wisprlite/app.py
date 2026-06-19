@@ -245,6 +245,14 @@ class App:
                     print("config reload error:", exc, file=sys.stderr)
 
     def _reload_config(self) -> None:
+        # Pick up any API key the settings window just saved to the .env file.
+        try:
+            from dotenv import load_dotenv
+
+            load_dotenv(config.config_dir() / ".env", override=True)
+        except Exception:
+            pass
+
         old, new = self.cfg, config.Config.load()
         self.cfg = new  # hotkey/mode/output read live via lambdas
 
@@ -253,6 +261,9 @@ class App:
         if any(getattr(old, k) != getattr(new, k) for k in engine_keys):
             self._engine = None
             self.recorder.device = config.device_arg(new)
+            self._prewarm()
+        elif self._engine is None:
+            # engine wasn't built yet (e.g. key was missing) — try now
             self._prewarm()
 
         if new.overlay and not self.overlay._started:

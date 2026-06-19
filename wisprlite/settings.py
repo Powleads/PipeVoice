@@ -75,8 +75,20 @@ def main() -> None:
     style.map("Accent.TButton", background=[("active", "#2bb588")])
     style.configure("TCheckbutton", background=BG, foreground=FG)
     style.map("TCheckbutton", background=[("active", BG)])
-    style.configure("TCombobox", fieldbackground=CARD, background=CARD, foreground=FG)
-    style.configure("TEntry", fieldbackground=CARD, foreground=FG)
+    style.configure("TCombobox", fieldbackground=CARD, background=CARD,
+                    foreground=FG, arrowcolor=FG)
+    style.map("TCombobox",
+              fieldbackground=[("readonly", CARD), ("disabled", CARD)],
+              foreground=[("readonly", FG), ("disabled", MUTED)],
+              selectbackground=[("readonly", CARD)],
+              selectforeground=[("readonly", FG)],
+              background=[("readonly", CARD), ("active", CARD)])
+    # the dropdown popup is a plain Tk Listbox, not themed by ttk
+    root.option_add("*TCombobox*Listbox.background", CARD)
+    root.option_add("*TCombobox*Listbox.foreground", FG)
+    root.option_add("*TCombobox*Listbox.selectBackground", ACCENT)
+    root.option_add("*TCombobox*Listbox.selectForeground", "#06281c")
+    style.configure("TEntry", fieldbackground=CARD, foreground=FG, insertcolor=FG)
 
     pad = dict(padx=14, pady=5, sticky="w")
     frm = ttk.Frame(root, padding=18)
@@ -107,6 +119,8 @@ def main() -> None:
     oai_var = tk.StringVar(value=cfg.openai_model)
     dg_var = tk.StringVar(value=cfg.deepgram_model)
     local_var = tk.StringVar(value=cfg.local_model_size)
+    oai_key_var = tk.StringVar()
+    dg_key_var = tk.StringVar()
     overlay_var = tk.BooleanVar(value=cfg.overlay)
     sounds_var = tk.BooleanVar(value=cfg.sounds)
     autostart_var = tk.BooleanVar(value=autostart.is_enabled())
@@ -167,6 +181,18 @@ def main() -> None:
     label("Deepgram model"); entry(dg_var); row += 1
     label("Local model size"); combo(local_var, LOCAL_SIZES); row += 1
 
+    # --- API keys ---
+    header("API keys")
+    label("OpenAI key", "saved" if config.openai_key() else "not set")
+    e_oai = ttk.Entry(frm, textvariable=oai_key_var, width=29, show="•")
+    e_oai.grid(row=row, column=1, padx=6, pady=5, sticky="w"); row += 1
+    label("Deepgram key", "saved" if config.deepgram_key() else "not set")
+    e_dg = ttk.Entry(frm, textvariable=dg_key_var, width=29, show="•")
+    e_dg.grid(row=row, column=1, padx=6, pady=5, sticky="w"); row += 1
+    ttk.Label(frm, text="Leave a key blank to keep the current one.",
+              style="Muted.TLabel").grid(row=row, column=0, columnspan=3,
+                                          sticky="w", padx=14); row += 1
+
     # --- Toggles ---
     header("Behaviour")
     ttk.Checkbutton(frm, text="Show live overlay", variable=overlay_var).grid(
@@ -197,6 +223,10 @@ def main() -> None:
         cfg.overlay = bool(overlay_var.get())
         cfg.sounds = bool(sounds_var.get())
         cfg.save()
+        if oai_key_var.get().strip():
+            config.save_api_key("OPENAI_API_KEY", oai_key_var.get())
+        if dg_key_var.get().strip():
+            config.save_api_key("DEEPGRAM_API_KEY", dg_key_var.get())
         try:
             if autostart_var.get():
                 autostart.enable()

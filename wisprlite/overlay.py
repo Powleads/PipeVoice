@@ -18,7 +18,7 @@ FRAME_MS = 33          # ~30 fps
 METER_N = 16           # number of VU bars
 METER_BW = 4           # bar width
 METER_GAP = 3          # gap between bars
-WIN_W, WIN_H = 460, 74
+WIN_W, WIN_H = 380, 68
 TRANSPARENT = "#010203"  # color key punched out to give rounded corners
 
 ACCENT = {
@@ -91,8 +91,8 @@ class Overlay:
             pass
 
         sw, sh = root.winfo_screenwidth(), root.winfo_screenheight()
-        x = (sw - WIN_W) // 2
-        y = sh - WIN_H - 96
+        x = 24                       # bottom-left corner, out of the way
+        y = sh - WIN_H - 60
         root.geometry(f"{WIN_W}x{WIN_H}+{x}+{y}")
 
         canvas = tk.Canvas(root, width=WIN_W, height=WIN_H, bg=bg, highlightthickness=0)
