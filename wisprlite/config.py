@@ -10,7 +10,7 @@ from __future__ import annotations
 import json
 import os
 import sys
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
 APP_NAME = "WisprLite"
@@ -67,6 +67,11 @@ class Config:
     overlay: bool = True
     sounds: bool = True
     min_seconds: float = 0.35       # ignore taps shorter than this
+    ai_cleanup: bool = False        # polish transcript with an LLM
+    cleanup_model: str = "gpt-4o-mini"
+    auto_enter: bool = False        # press Enter after typing (hands-free send)
+    vocabulary: str = ""            # comma-separated terms to bias recognition
+    replacements: dict = field(default_factory=dict)  # {wrong: right} post-fixes
 
     @classmethod
     def load(cls) -> "Config":

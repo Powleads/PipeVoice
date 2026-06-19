@@ -121,6 +121,10 @@ def main() -> None:
     local_var = tk.StringVar(value=cfg.local_model_size)
     oai_key_var = tk.StringVar()
     dg_key_var = tk.StringVar()
+    ai_cleanup_var = tk.BooleanVar(value=cfg.ai_cleanup)
+    auto_enter_var = tk.BooleanVar(value=cfg.auto_enter)
+    vocab_var = tk.StringVar(value=cfg.vocabulary)
+    fixes_var = tk.StringVar(value=", ".join(f"{k}={v}" for k, v in cfg.replacements.items()))
     overlay_var = tk.BooleanVar(value=cfg.overlay)
     sounds_var = tk.BooleanVar(value=cfg.sounds)
     autostart_var = tk.BooleanVar(value=autostart.is_enabled())
@@ -193,6 +197,17 @@ def main() -> None:
               style="Muted.TLabel").grid(row=row, column=0, columnspan=3,
                                           sticky="w", padx=14); row += 1
 
+    # --- Transcription ---
+    header("Transcription")
+    ttk.Checkbutton(frm, text="Polish with AI (Flow mode — needs OpenAI key)",
+                    variable=ai_cleanup_var).grid(row=row, column=0, columnspan=3,
+                                                  sticky="w", padx=14, pady=3); row += 1
+    ttk.Checkbutton(frm, text="Press Enter after typing (auto-send)",
+                    variable=auto_enter_var).grid(row=row, column=0, columnspan=3,
+                                                  sticky="w", padx=14, pady=3); row += 1
+    label("Vocabulary", "names/jargon, comma-sep"); entry(vocab_var); row += 1
+    label("Word fixes", "wrong=right, comma-sep"); entry(fixes_var); row += 1
+
     # --- Toggles ---
     header("Behaviour")
     ttk.Checkbutton(frm, text="Show live overlay", variable=overlay_var).grid(
@@ -222,6 +237,17 @@ def main() -> None:
         cfg.local_model_size = local_var.get().strip() or "base.en"
         cfg.overlay = bool(overlay_var.get())
         cfg.sounds = bool(sounds_var.get())
+        cfg.ai_cleanup = bool(ai_cleanup_var.get())
+        cfg.auto_enter = bool(auto_enter_var.get())
+        cfg.vocabulary = vocab_var.get().strip()
+        fixes = {}
+        for part in fixes_var.get().split(","):
+            if "=" in part:
+                k, v = part.split("=", 1)
+                k = k.strip()
+                if k:
+                    fixes[k] = v.strip()
+        cfg.replacements = fixes
         cfg.save()
         if oai_key_var.get().strip():
             config.save_api_key("OPENAI_API_KEY", oai_key_var.get())

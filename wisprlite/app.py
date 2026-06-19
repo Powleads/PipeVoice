@@ -14,7 +14,7 @@ from .audio import Recorder
 from .hotkey import HotkeyManager
 from .overlay import Overlay
 from .tray import Tray
-from .typer import type_text
+from .typer import apply_replacements, type_text
 
 log = logging.getLogger("wisprlite")
 
@@ -49,26 +49,31 @@ class App:
     # ---- engine -----------------------------------------------------------
     def _build_engine(self, name: str | None = None):
         name = name or self.cfg.engine
+        vocab = (self.cfg.vocabulary or "").strip()
         if name == "openai":
             from .engines.openai_engine import OpenAIEngine
 
             if not config.openai_key():
                 raise RuntimeError("OPENAI_API_KEY is not set")
-            return OpenAIEngine(model=self.cfg.openai_model, language=self.cfg.language or None)
+            return OpenAIEngine(model=self.cfg.openai_model,
+                                language=self.cfg.language or None, prompt=vocab)
         if name == "deepgram":
             from .engines.deepgram_engine import DeepgramEngine
 
             if not config.deepgram_key():
                 raise RuntimeError("DEEPGRAM_API_KEY is not set")
+            kw = [t.strip() for t in vocab.split(",") if t.strip()] or None
             return DeepgramEngine(
                 api_key=config.deepgram_key(),
                 model=self.cfg.deepgram_model,
                 language=self.cfg.language or "en-US",
+                keywords=kw,
             )
         if name == "local":
             from .engines.local_engine import LocalEngine
 
-            return LocalEngine(model_size=self.cfg.local_model_size, language=self.cfg.language or None)
+            return LocalEngine(model_size=self.cfg.local_model_size,
+                               language=self.cfg.language or None, prompt=vocab)
         raise RuntimeError(f"Unknown engine: {name}")
 
     def _get_engine(self):
@@ -133,8 +138,20 @@ class App:
                 self._set_icon("idle")
                 return
 
+            # AI cleanup ("Flow mode") — needs an OpenAI key; falls back to raw.
+            if self.cfg.ai_cleanup and config.openai_key():
+                self.overlay.set_state("transcribing", "Polishing…")
+                from . import cleanup
+
+                polished = cleanup.clean(text, self.cfg.cleanup_model)
+                if polished:
+                    text = polished
+
+            # user word-fixes, applied last so they always stick
+            text = apply_replacements(text, self.cfg.replacements)
+
             self.overlay.set_state("done", text)
-            type_text(text, self.cfg.output_mode)
+            type_text(text, self.cfg.output_mode, press_enter=self.cfg.auto_enter)
             self._beep(990, 60)
             self._set_icon("idle")
         finally:
@@ -262,7 +279,7 @@ class App:
         self.cfg = new  # hotkey/mode/output read live via lambdas
 
         engine_keys = ("engine", "openai_model", "deepgram_model",
-                       "local_model_size", "language", "device")
+                       "local_model_size", "language", "device", "vocabulary")
         if any(getattr(old, k) != getattr(new, k) for k in engine_keys):
             self._engine = None
             self.recorder.device = config.device_arg(new)

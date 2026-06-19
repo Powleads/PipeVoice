@@ -39,6 +39,8 @@ class _OpenAISession(Session):
         }
         if self._engine.language:
             kwargs["language"] = self._engine.language
+        if self._engine.prompt:
+            kwargs["prompt"] = self._engine.prompt  # bias toward these terms
         resp = self._engine.client.audio.transcriptions.create(**kwargs)
         return (resp.text or "").strip()
 
@@ -47,12 +49,14 @@ class OpenAIEngine(Engine):
     name = "openai"
     streaming = False
 
-    def __init__(self, model: str = "whisper-1", language: Optional[str] = None) -> None:
+    def __init__(self, model: str = "whisper-1", language: Optional[str] = None,
+                 prompt: str = "") -> None:
         from openai import OpenAI
 
         self.client = OpenAI()  # reads OPENAI_API_KEY from env
         self.model = model
         self.language = language or None
+        self.prompt = (prompt or "").strip()
 
     def start_session(self, on_partial: Optional[OnPartial] = None) -> Session:
         return _OpenAISession(self, on_partial)

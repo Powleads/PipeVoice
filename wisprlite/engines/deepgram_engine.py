@@ -37,7 +37,11 @@ class _DeepgramSession(Session):
         self._done = threading.Event()
         self._error: Optional[str] = None
 
-        self.conn = engine.client.listen.websocket.v("1")
+        listen = engine.client.listen
+        if hasattr(listen, "websocket"):
+            self.conn = listen.websocket.v("1")
+        else:  # older v3 layout
+            self.conn = listen.live.v("1")
 
         def on_transcript(*args, **kwargs):
             try:
@@ -68,7 +72,7 @@ class _DeepgramSession(Session):
         self.conn.on(LiveTranscriptionEvents.Error, on_error)
         self.conn.on(LiveTranscriptionEvents.Close, on_close)
 
-        options = LiveOptions(
+        opts = dict(
             model=engine.model,
             language=engine.language or "en-US",
             encoding="linear16",
@@ -78,6 +82,13 @@ class _DeepgramSession(Session):
             smart_format=True,
             punctuate=True,
         )
+        if engine.keywords:
+            opts["keywords"] = engine.keywords  # bias toward these terms
+        try:
+            options = LiveOptions(**opts)
+        except TypeError:
+            opts.pop("keywords", None)  # some versions reject unknown kwargs
+            options = LiveOptions(**opts)
         if not self.conn.start(options):
             raise RuntimeError("Deepgram connection failed to start")
 
@@ -108,12 +119,14 @@ class DeepgramEngine(Engine):
     name = "deepgram"
     streaming = True
 
-    def __init__(self, api_key: str, model: str = "nova-2", language: str = "en-US") -> None:
+    def __init__(self, api_key: str, model: str = "nova-2", language: str = "en-US",
+                 keywords: Optional[list] = None) -> None:
         from deepgram import DeepgramClient
 
         self.client = DeepgramClient(api_key)
         self.model = model
         self.language = language
+        self.keywords = keywords or None
 
     def start_session(self, on_partial: Optional[OnPartial] = None) -> Session:
         return _DeepgramSession(self, on_partial)

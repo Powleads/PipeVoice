@@ -29,6 +29,7 @@ class _LocalSession(Session):
             language=self._engine.language,
             beam_size=1,
             vad_filter=True,
+            initial_prompt=self._engine.prompt or None,
         )
         return " ".join(seg.text.strip() for seg in segments).strip()
 
@@ -43,11 +44,13 @@ class LocalEngine(Engine):
         language: Optional[str] = None,
         device: str = "auto",
         compute_type: str = "int8",
+        prompt: str = "",
     ) -> None:
         from faster_whisper import WhisperModel
 
         self.model = WhisperModel(model_size, device=device, compute_type=compute_type)
         self.language = language or None
+        self.prompt = (prompt or "").strip()
 
     def start_session(self, on_partial: Optional[OnPartial] = None) -> Session:
         return _LocalSession(self, on_partial)
