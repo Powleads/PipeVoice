@@ -13,9 +13,9 @@ import threading
 
 from . import autostart, cleanup, config
 
-ENGINES = [("openai", "OpenAI Whisper  (cloud)"),
-           ("deepgram", "Deepgram  (streaming)"),
-           ("local", "Local Whisper  (offline)")]
+ENGINES = [("deepgram", "Deepgram — fastest, live"),
+           ("openai", "OpenAI Whisper — accurate, slight wait"),
+           ("local", "Local Whisper — private & free, slower")]
 MODES = [("ptt", "Push-to-talk (hold)"), ("toggle", "Toggle (tap on/off)")]
 OUTPUTS = [("type", "Type keystrokes"), ("paste", "Clipboard + Ctrl+V")]
 CLEANUP_PROVIDERS = [("openai", "OpenAI"), ("gemini", "Google Gemini (free tier)"),
@@ -55,6 +55,107 @@ def _input_devices():
     return items
 
 
+GOOD = "#98c379"
+WARN = "#e5c07b"
+_URLS = {
+    "deepgram": "https://console.deepgram.com/",
+    "openai": "https://platform.openai.com/api-keys",
+    "gemini": "https://aistudio.google.com/apikey",
+    "openrouter": "https://openrouter.ai/keys",
+    "ollama": "https://ollama.com/download",
+    "github": "https://github.com/Powleads/PipeVoice",
+}
+
+
+def _build_guide(parent, wheel) -> None:
+    """Populate the Guide tab: how it works, engine speed, polish, tips."""
+    import tkinter as tk
+    import webbrowser
+    from tkinter import ttk
+
+    gc = tk.Canvas(parent, bg=BG, highlightthickness=0)
+    gb = ttk.Scrollbar(parent, orient="vertical", command=gc.yview)
+    gc.configure(yscrollcommand=gb.set)
+    gb.pack(side="right", fill="y")
+    gc.pack(side="left", fill="both", expand=True)
+    g = tk.Frame(gc, bg=BG)
+    gc.create_window((0, 0), window=g, anchor="nw")
+    g.bind("<Configure>", lambda e: gc.configure(scrollregion=gc.bbox("all")))
+    wheel(gc)
+
+    def head(t, top=16):
+        tk.Label(g, text=t, bg=BG, fg=ACCENT, font=("Segoe UI", 10, "bold"),
+                 anchor="w", justify="left").pack(fill="x", padx=22, pady=(top, 5))
+
+    def body(t):
+        tk.Label(g, text=t, bg=BG, fg=MUTED, font=("Segoe UI", 9), anchor="w",
+                 justify="left", wraplength=470).pack(fill="x", padx=22, pady=(0, 2))
+
+    def item(name, t, badge=None, badge_color=GOOD):
+        row = tk.Frame(g, bg=BG)
+        row.pack(fill="x", padx=22, pady=(7, 0))
+        tk.Label(row, text=name, bg=BG, fg=FG,
+                 font=("Segoe UI", 9, "bold")).pack(side="left")
+        if badge:
+            tk.Label(row, text=f" {badge} ", bg=badge_color, fg="#10131a",
+                     font=("Segoe UI", 7, "bold")).pack(side="left", padx=(8, 0))
+        tk.Label(g, text=t, bg=BG, fg=MUTED, font=("Segoe UI", 9), anchor="w",
+                 justify="left", wraplength=470).pack(fill="x", padx=22)
+
+    def link(text, key):
+        lk = tk.Label(g, text=text, bg=BG, fg=ACCENT, cursor="hand2",
+                      font=("Segoe UI", 9, "underline"), anchor="w")
+        lk.pack(anchor="w", padx=22, pady=(3, 0))
+        lk.bind("<Button-1>", lambda e: webbrowser.open(_URLS[key]))
+
+    head("How it works", top=14)
+    body("Hold your hotkey, talk, then release — your words type in wherever the cursor is: "
+         "editor, browser, terminal, anywhere. Default hotkey is Ctrl + \\.")
+    body("The second (clipboard) hotkey copies what you say instead of typing it — handy for "
+         "pasting feedback into another window.")
+
+    head("Pick your engine — speed lives here")
+    body("Transcription is the slow part; polish is fast. The engine you choose is the single "
+         "biggest factor in how snappy Pipevoice feels.")
+    item("Deepgram", "Streams text as you talk, so it feels instant. Best for long dictation. "
+         "Free to sign up, costs pennies a day.", badge="FASTEST · LIVE", badge_color=GOOD)
+    item("OpenAI Whisper", "The most accurate option, but it transcribes after you release, so "
+         "expect a short few-second wait on longer clips.", badge="MOST ACCURATE", badge_color=WARN)
+    item("Local Whisper", "Runs entirely on your PC — nothing leaves the machine, no key needed. "
+         "It is the slowest, especially on bigger models. Start on base.en to test, then raise the "
+         "model size to medium.en for much better accuracy if your PC can handle it.",
+         badge="PRIVATE · FREE", badge_color=MUTED)
+    body("Rule of thumb: want it fast? Use Deepgram. Want fully private and free? Use Local Whisper "
+         "and bump the model size.")
+    link("Get a free Deepgram key  ↗", "deepgram")
+    link("Get an OpenAI key  ↗", "openai")
+
+    head("Polish (Flow mode) — optional")
+    body("Cleans up filler words, punctuation and casing after transcription. It is fast — the wait "
+         "you feel is transcription, not polish. Turn it on under Transcription.")
+    item("Google Gemini", "Free tier, and most people already have a Google account. The easiest "
+         "free option if you don't have OpenAI credit.", badge="FREE · EASIEST", badge_color=GOOD)
+    item("OpenAI", "Uses your OpenAI key — same one as the transcription engine.")
+    item("OpenRouter", "Free community models via a single key.")
+    item("Ollama", "For 100% private polish, install Ollama and pull a small model "
+         "(e.g. llama3.2). Nothing leaves your PC.", badge="OFFLINE", badge_color=MUTED)
+    link("Get a free Gemini key  ↗", "gemini")
+    link("Get an OpenRouter key  ↗", "openrouter")
+    link("Install Ollama  ↗", "ollama")
+
+    head("Make it yours")
+    body("• Accent / language (under Audio): pick yours for a real accuracy boost — UK, US, Indian, "
+         "Australian, or Russian-accented English, and more.")
+    body("• Speech notes: describe your accent, stutter or filler habits. The AI polish uses it to "
+         "fix mis-hearings tailored to how you speak.")
+    body("• Vocabulary: add names and jargon so they're always spelled right.")
+    body("• Word fixes: wrong=right pairs, applied last so they always win.")
+
+    head("Need a hand?")
+    link("Pipevoice on GitHub — docs, issues, source  ↗", "github")
+    tk.Label(g, text="", bg=BG).pack(pady=6)  # bottom breathing room
+
+
 def main(first_run: bool = False) -> None:
     import tkinter as tk
     from tkinter import ttk
@@ -63,7 +164,7 @@ def main(first_run: bool = False) -> None:
     root = tk.Tk()
     root.title("Set up Pipevoice" if first_run else "Pipevoice settings")
     root.configure(bg=BG)
-    root.resizable(False, False)
+    root.resizable(False, True)
     ico = config.asset_path("wisprlite.ico")
     if ico:
         try:
@@ -88,6 +189,12 @@ def main(first_run: bool = False) -> None:
     style.map("Accent.TButton", background=[("active", "#e8838b")])
     style.configure("TCheckbutton", background=BG, foreground=FG)
     style.map("TCheckbutton", background=[("active", BG)])
+    style.configure("TNotebook", background=BG, borderwidth=0, tabmargins=(8, 6, 0, 0))
+    style.configure("TNotebook.Tab", background=CARD, foreground=MUTED,
+                    padding=(18, 7), font=("Segoe UI", 9, "bold"), borderwidth=0)
+    style.map("TNotebook.Tab", background=[("selected", BG)],
+              foreground=[("selected", ACCENT), ("active", FG)])
+    style.configure("Footer.TFrame", background=CARD)
     style.configure("TCombobox", fieldbackground=CARD, background=CARD,
                     foreground=FG, arrowcolor=FG)
     style.map("TCombobox",
@@ -104,18 +211,35 @@ def main(first_run: bool = False) -> None:
     style.configure("TEntry", fieldbackground=CARD, foreground=FG, insertcolor=FG)
 
     pad = dict(padx=14, pady=5, sticky="w")
-    # Scrollable content so the window fits any screen height. The Save/Cancel
-    # row lives at the bottom of this frame, so it's always reachable (scroll if
-    # the display is short).
-    _canvas = tk.Canvas(root, bg=BG, highlightthickness=0)
-    _vbar = ttk.Scrollbar(root, orient="vertical", command=_canvas.yview)
+
+    def _wheel(canvas):
+        # Scroll whichever canvas the pointer is over (two scroll areas exist).
+        canvas.bind("<Enter>", lambda e: canvas.bind_all(
+            "<MouseWheel>", lambda ev: canvas.yview_scroll(int(-ev.delta / 120), "units")))
+        canvas.bind("<Leave>", lambda e: canvas.unbind_all("<MouseWheel>"))
+
+    # Fixed footer (Save/Cancel always visible), then a tabbed body: the form
+    # plus a Guide tab that explains engines, speed and polish options.
+    footer = ttk.Frame(root, padding=(14, 9))
+    footer.pack(side="bottom", fill="x")
+    nb = ttk.Notebook(root)
+    nb.pack(side="top", fill="both", expand=True)
+    tab_settings = ttk.Frame(nb)
+    tab_guide = ttk.Frame(nb)
+    nb.add(tab_settings, text="Settings")
+    nb.add(tab_guide, text="Guide")
+
+    # --- Settings tab: scrollable form ---
+    _canvas = tk.Canvas(tab_settings, bg=BG, highlightthickness=0)
+    _vbar = ttk.Scrollbar(tab_settings, orient="vertical", command=_canvas.yview)
     _canvas.configure(yscrollcommand=_vbar.set)
     _vbar.pack(side="right", fill="y")
     _canvas.pack(side="left", fill="both", expand=True)
     frm = ttk.Frame(_canvas, padding=18)
     _canvas.create_window((0, 0), window=frm, anchor="nw")
     frm.bind("<Configure>", lambda e: _canvas.configure(scrollregion=_canvas.bbox("all")))
-    _canvas.bind_all("<MouseWheel>", lambda e: _canvas.yview_scroll(int(-e.delta / 120), "units"))
+    _wheel(_canvas)
+    _build_guide(tab_guide, _wheel)
     row = 0
 
     def header(text):
@@ -172,6 +296,8 @@ def main(first_run: bool = False) -> None:
     # --- General ---
     header("General")
     label("Engine"); combo(engine_var, [l for _, l in ENGINES]); row += 1
+    ttk.Label(frm, text="Deepgram is fastest (live). Local & OpenAI add a short wait — see the Guide tab.",
+              style="Muted.TLabel").grid(row=row, column=0, columnspan=3, sticky="w", padx=14, pady=(0, 2)); row += 1
     label("Mode"); combo(mode_var, [l for _, l in MODES]); row += 1
     label("Output"); combo(output_var, [l for _, l in OUTPUTS]); row += 1
 
@@ -286,10 +412,7 @@ def main(first_run: bool = False) -> None:
     ttk.Checkbutton(frm, text="Automatic updates (check on startup)", variable=auto_update_var).grid(
         row=row, column=0, columnspan=2, sticky="w", padx=14, pady=3); row += 1
 
-    # --- Buttons ---
-    status = ttk.Label(frm, text="", style="Muted.TLabel")
-    status.grid(row=row, column=0, columnspan=3, sticky="w", padx=14, pady=(10, 0)); row += 1
-
+    # --- Save / Cancel (live in the fixed footer) ---
     def value_for(var, table):
         label_to_value = {l: k for k, l in table}
         return label_to_value.get(var.get(), table[0][0])
@@ -341,17 +464,17 @@ def main(first_run: bool = False) -> None:
         if close:
             root.destroy()
 
-    btns = ttk.Frame(frm)
-    btns.grid(row=row, column=0, columnspan=3, sticky="e", padx=14, pady=(14, 4))
-    ttk.Button(btns, text="Cancel", command=root.destroy).grid(row=0, column=0, padx=6)
-    ttk.Button(btns, text="Save", style="Accent.TButton", command=save).grid(row=0, column=1)
+    ttk.Button(footer, text="Save", style="Accent.TButton", command=save).pack(side="right")
+    ttk.Button(footer, text="Cancel", command=root.destroy).pack(side="right", padx=(0, 8))
+    ttk.Label(footer, text="Not sure what to pick? Open the Guide tab.",
+              style="Muted.TLabel").pack(side="left")
 
     root.update_idletasks()
-    cw = frm.winfo_reqwidth() + 22          # content width + scrollbar
+    cw = frm.winfo_reqwidth() + 22          # form width + scrollbar
     ch = frm.winfo_reqheight()
     sw, sh = root.winfo_screenwidth(), root.winfo_screenheight()
-    win_w = cw
-    win_h = min(ch + 4, sh - 90)            # never taller than the screen
+    win_w = max(cw, 530)                    # also fit the Guide tab's text width
+    win_h = min(ch + 96, sh - 80)           # + tab strip + footer; never off-screen
     x = max(0, (sw - win_w) // 2)
     y = max(0, (sh - win_h) // 3)
     root.geometry(f"{win_w}x{win_h}+{x}+{y}")
