@@ -22,7 +22,7 @@ WIN_W, WIN_H = 380, 68
 TRANSPARENT = "#010203"  # color key punched out to give rounded corners
 
 ACCENT = {
-    "listening": "#34d399",
+    "listening": "#e06c75",
     "transcribing": "#fbbf24",
     "error": "#f87171",
     "done": "#60a5fa",

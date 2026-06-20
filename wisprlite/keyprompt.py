@@ -15,7 +15,7 @@ BG = "#13151d"
 CARD = "#1b1e29"
 FG = "#e5e7eb"
 MUTED = "#94a3b8"
-ACCENT = "#34d399"
+ACCENT = "#e06c75"
 
 PROVIDER = {
     "openai": ("OpenAI", "OPENAI_API_KEY", "https://platform.openai.com/api-keys", "sk-..."),
@@ -138,7 +138,7 @@ def _dialog(cfg) -> None:
               activebackground="#262a3a", activeforeground=FG, relief="flat",
               padx=12, pady=7, font=("Segoe UI", 9)).pack(side="left", padx=(8, 0))
     save_btn = tk.Button(btns, text="Save & start", command=save, bg=ACCENT,
-                         fg="#06281c", activebackground="#2bb588", relief="flat",
+                         fg="#1a0c0d", activebackground="#e8838b", relief="flat",
                          padx=16, pady=7, font=("Segoe UI", 9, "bold"))
     save_btn.pack(side="right")
     entry.bind("<Return>", save)
