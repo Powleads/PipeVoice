@@ -25,7 +25,7 @@ BG = "#13151d"
 CARD = "#1b1e29"
 FG = "#e5e7eb"
 MUTED = "#94a3b8"
-ACCENT = "#34d399"
+ACCENT = "#e06c75"
 
 
 def _input_devices():
@@ -70,9 +70,9 @@ def main(first_run: bool = False) -> None:
     style.configure("Head.TLabel", background=BG, foreground=ACCENT, font=("Segoe UI", 10, "bold"))
     style.configure("TButton", background=CARD, foreground=FG, padding=6)
     style.map("TButton", background=[("active", "#262a3a")])
-    style.configure("Accent.TButton", background=ACCENT, foreground="#06281c",
+    style.configure("Accent.TButton", background=ACCENT, foreground="#1a0c0d",
                     font=("Segoe UI", 9, "bold"), padding=7)
-    style.map("Accent.TButton", background=[("active", "#2bb588")])
+    style.map("Accent.TButton", background=[("active", "#e8838b")])
     style.configure("TCheckbutton", background=BG, foreground=FG)
     style.map("TCheckbutton", background=[("active", BG)])
     style.configure("TCombobox", fieldbackground=CARD, background=CARD,
@@ -87,7 +87,7 @@ def main(first_run: bool = False) -> None:
     root.option_add("*TCombobox*Listbox.background", CARD)
     root.option_add("*TCombobox*Listbox.foreground", FG)
     root.option_add("*TCombobox*Listbox.selectBackground", ACCENT)
-    root.option_add("*TCombobox*Listbox.selectForeground", "#06281c")
+    root.option_add("*TCombobox*Listbox.selectForeground", "#1a0c0d")
     style.configure("TEntry", fieldbackground=CARD, foreground=FG, insertcolor=FG)
 
     pad = dict(padx=14, pady=5, sticky="w")

@@ -18,7 +18,7 @@ BG = "#13151d"
 CARD = "#1b1e29"
 FG = "#e5e7eb"
 MUTED = "#94a3b8"
-ACCENT = "#34d399"
+ACCENT = "#e06c75"
 
 OPENAI_URL = "https://platform.openai.com/api-keys"
 DEEPGRAM_URL = "https://console.deepgram.com/"
@@ -116,8 +116,8 @@ def show_welcome() -> bool:
     tk.Button(btns, text="I'll set up later", command=later, bg=CARD, fg=FG,
               activebackground="#262a3a", activeforeground=FG, relief="flat",
               padx=16, pady=8, font=("Segoe UI", 9)).pack(side="left")
-    tk.Button(btns, text="Get started   →", command=go, bg=ACCENT, fg="#06281c",
-              activebackground="#2bb588", relief="flat", padx=22, pady=8,
+    tk.Button(btns, text="Get started   →", command=go, bg=ACCENT, fg="#1a0c0d",
+              activebackground="#e8838b", relief="flat", padx=22, pady=8,
               font=("Segoe UI", 10, "bold")).pack(side="right")
 
     root.update_idletasks()
