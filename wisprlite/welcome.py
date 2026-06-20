@@ -1,8 +1,9 @@
 """First-run welcome / tutorial splash.
 
 Shown once on first launch (before the settings window) to explain how Pipevoice
-works and how to get an API key. Returns True if the user clicked "Get started"
-(so the caller opens Settings next), False if they chose to set up later.
+works, which engine to pick for speed, and how to get a key (or stay fully
+offline). Returns True if the user clicked "Get started" (so the caller opens
+Settings next), False if they chose to set up later.
 
 Plain Tk on the app's dark palette; runs its own short-lived root, fully torn
 down before anything else starts (same pattern as keyprompt).
@@ -19,9 +20,13 @@ CARD = "#1b1e29"
 FG = "#e5e7eb"
 MUTED = "#94a3b8"
 ACCENT = "#e06c75"
+GOOD = "#98c379"
+WARN = "#e5c07b"
 
 OPENAI_URL = "https://platform.openai.com/api-keys"
 DEEPGRAM_URL = "https://console.deepgram.com/"
+GEMINI_URL = "https://aistudio.google.com/apikey"
+OLLAMA_URL = "https://ollama.com/download"
 
 
 def show_welcome() -> bool:
@@ -44,7 +49,7 @@ def show_welcome() -> bool:
         except Exception:
             pass
 
-    wrap = tk.Frame(root, bg=BG, padx=36, pady=30)
+    wrap = tk.Frame(root, bg=BG, padx=34, pady=28)
     wrap.pack()
 
     # --- header ---
@@ -53,7 +58,7 @@ def show_welcome() -> bool:
     tk.Label(wrap, text="Talk faster than you type.", bg=BG, fg=FG,
              font=("Segoe UI", 13)).pack(anchor="w", pady=(2, 0))
     tk.Label(wrap, text="Push-to-talk voice typing for Windows — your words land in any app.",
-             bg=BG, fg=MUTED, font=("Segoe UI", 9)).pack(anchor="w", pady=(3, 20))
+             bg=BG, fg=MUTED, font=("Segoe UI", 9)).pack(anchor="w", pady=(3, 18))
 
     # --- how it works ---
     tk.Label(wrap, text="HOW IT WORKS", bg=BG, fg=ACCENT,
@@ -73,37 +78,63 @@ def show_welcome() -> bool:
         tk.Label(row, text=f"  — {sub}", bg=BG, fg=MUTED,
                  font=("Segoe UI", 9)).pack(side="left")
 
-    # --- get a key ---
-    tk.Label(wrap, text="BEFORE YOU START — GET ONE API KEY", bg=BG, fg=ACCENT,
+    # --- choose an engine (speed!) ---
+    tk.Label(wrap, text="CHOOSE YOUR ENGINE — THIS DECIDES YOUR SPEED", bg=BG, fg=ACCENT,
              font=("Segoe UI", 9, "bold")).pack(anchor="w", pady=(22, 2))
-    tk.Label(wrap, text="Pick either one. Both are free to sign up — you just add a few dollars of",
+    tk.Label(wrap, text="Transcription is the slow part. Deepgram streams as you talk, so it feels instant.",
+             bg=BG, fg=MUTED, font=("Segoe UI", 9)).pack(anchor="w", pady=(0, 8))
+
+    def engine_card(name, badge_text, badge_color, desc, url=None):
+        card = tk.Frame(wrap, bg=CARD, padx=14, pady=9)
+        card.pack(anchor="w", fill="x", pady=4)
+        top = tk.Frame(card, bg=CARD)
+        top.pack(anchor="w", fill="x")
+        tk.Label(top, text=name, bg=CARD, fg=FG,
+                 font=("Segoe UI", 10, "bold")).pack(side="left")
+        tk.Label(top, text=f" {badge_text} ", bg=badge_color, fg="#10131a",
+                 font=("Segoe UI", 7, "bold")).pack(side="left", padx=(8, 0))
+        if url:
+            link = tk.Label(top, text="Get free key  ↗", bg=CARD, fg=ACCENT, cursor="hand2",
+                            font=("Segoe UI", 9, "underline"))
+            link.pack(side="right")
+            link.bind("<Button-1>", lambda e, u=url: webbrowser.open(u))
+        tk.Label(card, text=desc, bg=CARD, fg=MUTED,
+                 font=("Segoe UI", 8)).pack(anchor="w", pady=(2, 0))
+
+    engine_card("Deepgram", "FASTEST · LIVE", GOOD,
+                "Text appears as you speak. Best for long dictation. Free to sign up, pennies a day.",
+                DEEPGRAM_URL)
+    engine_card("OpenAI Whisper", "MOST ACCURATE", WARN,
+                "Top accuracy, but transcribes after you release — expect a short few-second wait.",
+                OPENAI_URL)
+    engine_card("Local Whisper", "PRIVATE · FREE · NO KEY", MUTED,
+                "Runs entirely on your PC, nothing leaves the machine. Slowest — raise the model size for accuracy.")
+
+    # --- optional polish ---
+    tk.Label(wrap, text="OPTIONAL: AI POLISH", bg=BG, fg=ACCENT,
+             font=("Segoe UI", 9, "bold")).pack(anchor="w", pady=(20, 2))
+    tk.Label(wrap, text="Tidies filler words, punctuation and casing. It's fast. Use your OpenAI key, a free",
              bg=BG, fg=MUTED, font=("Segoe UI", 9)).pack(anchor="w")
-    tk.Label(wrap, text="credit, and it costs only pennies a day to use.",
-             bg=BG, fg=MUTED, font=("Segoe UI", 9)).pack(anchor="w", pady=(0, 9))
+    polish = tk.Frame(wrap, bg=BG)
+    polish.pack(anchor="w", pady=(0, 0))
+    tk.Label(polish, text="Google Gemini key", bg=BG, fg=ACCENT, cursor="hand2",
+             font=("Segoe UI", 9, "underline")).pack(side="left")
+    tk.Label(polish, text=" (most people have a Google account), or fully offline with ",
+             bg=BG, fg=MUTED, font=("Segoe UI", 9)).pack(side="left")
+    tk.Label(polish, text="Ollama", bg=BG, fg=ACCENT, cursor="hand2",
+             font=("Segoe UI", 9, "underline")).pack(side="left")
+    tk.Label(polish, text=".", bg=BG, fg=MUTED, font=("Segoe UI", 9)).pack(side="left")
+    for child in polish.winfo_children():
+        if child.cget("fg") == ACCENT:
+            url = GEMINI_URL if "Gemini" in child.cget("text") else OLLAMA_URL
+            child.bind("<Button-1>", lambda e, u=url: webbrowser.open(u))
 
-    def key_card(name, desc, url):
-        row = tk.Frame(wrap, bg=CARD, padx=14, pady=10)
-        row.pack(anchor="w", fill="x", pady=4)
-        left = tk.Frame(row, bg=CARD)
-        left.pack(side="left")
-        tk.Label(left, text=name, bg=CARD, fg=FG,
-                 font=("Segoe UI", 10, "bold")).pack(anchor="w")
-        tk.Label(left, text=desc, bg=CARD, fg=MUTED,
-                 font=("Segoe UI", 8)).pack(anchor="w")
-        link = tk.Label(row, text="Get key  ↗", bg=CARD, fg=ACCENT, cursor="hand2",
-                        font=("Segoe UI", 10, "underline"))
-        link.pack(side="right", padx=(24, 2))
-        link.bind("<Button-1>", lambda e, u=url: webbrowser.open(u))
-
-    key_card("OpenAI Whisper", "Most accurate  ·  platform.openai.com", OPENAI_URL)
-    key_card("Deepgram", "Live, lowest latency  ·  console.deepgram.com", DEEPGRAM_URL)
-
-    tk.Label(wrap, text="No key? Pick the Offline engine on the next screen — it runs on your PC, free.",
-             bg=BG, fg=MUTED, font=("Segoe UI", 9)).pack(anchor="w", pady=(9, 0))
+    tk.Label(wrap, text="You can change any of this anytime in Settings → the Guide tab walks you through it.",
+             bg=BG, fg=MUTED, font=("Segoe UI", 9)).pack(anchor="w", pady=(10, 0))
 
     # --- buttons ---
     btns = tk.Frame(wrap, bg=BG)
-    btns.pack(fill="x", pady=(24, 0))
+    btns.pack(fill="x", pady=(22, 0))
 
     def go():
         result["go"] = True
@@ -123,7 +154,7 @@ def show_welcome() -> bool:
     root.update_idletasks()
     w, h = root.winfo_width(), root.winfo_height()
     sw, sh = root.winfo_screenwidth(), root.winfo_screenheight()
-    root.geometry(f"+{(sw - w) // 2}+{(sh - h) // 4}")
+    root.geometry(f"+{(sw - w) // 2}+{max(0, (sh - h) // 5)}")
     try:
         root.attributes("-topmost", True)
     except Exception:
