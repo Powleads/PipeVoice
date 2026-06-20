@@ -202,6 +202,38 @@
   .modal .skip:hover{color:var(--text)}
   .modal .ok{color:var(--good);font-family:var(--mono);font-size:15px;margin-top:8px}
   .modal .err{color:var(--accent);font-size:13.5px;min-height:1px}
+
+  /* connectors / your-stack section */
+
+  /* connectors centerpiece: privacy ladder */
+  #stack .spot{align-items:start}
+  .ladder{display:flex;flex-direction:column;gap:0}
+  .rung{display:flex;gap:14px;align-items:flex-start;padding:16px 0;border-bottom:1px solid var(--border-soft)}
+  .rung:last-child{border-bottom:none}
+  .rung b{display:block;font-size:15.5px;letter-spacing:-.01em;color:var(--text)}
+  .rung .rs{display:block;color:var(--muted);font-size:14px;margin-top:3px;line-height:1.5}
+  .rung .dot{flex:none;width:11px;height:11px;border-radius:50%;margin-top:6px;position:relative}
+  .rung .dot::before{content:"";position:absolute;left:50%;top:18px;transform:translateX(-50%);width:1px;height:30px;background:var(--border-soft)}
+  .rung:last-child .dot::before{display:none}
+  .rung .dot.cloud{background:var(--warn);box-shadow:0 0 9px rgba(229,192,123,.45)}
+  .rung .dot.free{background:var(--good);box-shadow:0 0 9px rgba(152,195,121,.45)}
+  .rung .dot.offline{background:var(--accent);box-shadow:var(--glow)}
+
+  /* connectors centerpiece: named roster */
+  .roster{display:grid;grid-template-columns:1fr 1fr;gap:34px;margin-top:34px}
+  @media(max-width:780px){.roster{grid-template-columns:1fr;gap:26px}}
+  .rhead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;padding-bottom:12px;margin-bottom:8px;border-bottom:1px solid var(--border-soft)}
+  .rlabel{font-family:var(--mono);font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+  .rsub{color:var(--muted);font-size:13px}
+  .rrow{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;padding:13px 0;border-bottom:1px solid var(--border-soft)}
+  .rcol .rrow:last-child{border-bottom:none}
+  .rname{font-weight:600;font-size:15px;letter-spacing:-.01em;color:var(--text);min-width:128px}
+  .rdesc{color:var(--muted);font-size:13.5px;flex:1 1 140px}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;width:100%;margin-top:6px}
+  .chip{font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;padding:3px 8px;border-radius:999px;border:1px solid var(--border-soft);line-height:1.3;white-space:nowrap}
+  .chip.good{color:var(--good);border-color:rgba(152,195,121,.4);background:rgba(152,195,121,.08)}
+  .chip.warn{color:var(--warn);border-color:rgba(229,192,123,.4);background:rgba(229,192,123,.08)}
+  .chip.muted{color:var(--muted);background:rgba(154,161,173,.07)}
 </style>
 </head>
 <body>
@@ -222,6 +254,7 @@
     <div class="nav-links">
       <a href="#why">Why</a>
       <a href="#features">Features</a>
+      <a href="#stack">Stack</a>
       <a href="#how">Setup</a>
       <a class="gh" href="https://github.com/Powleads/PipeVoice">GitHub ↗</a>
     </div>
@@ -237,7 +270,7 @@
       <a class="btn btn-primary" data-download href="https://github.com/Powleads/PipeVoice/releases/latest/download/Pipevoice-Setup.exe">↓ Download for Windows</a>
       <a class="btn btn-ghost" href="https://github.com/Powleads/PipeVoice">View source</a>
     </div>
-    <p class="fine">one-click install · bring your own key · or run 100% offline</p>
+    <p class="fine">one-click install · auto-updates itself · bring your own key, or run 100% offline</p>
 
     <div class="stage">
       <div class="win">
@@ -308,8 +341,8 @@
         <p>Dictate prompts straight into Claude Code, Cursor, or any terminal — 3–5× faster than typing them. Talk the way you think.</p>
       </div>
       <div class="card">
-        <div class="h"><svg viewBox="0 0 24 24" fill="none" stroke="#e06c75" stroke-width="2"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg><h3>Three engines</h3></div>
-        <p>Whisper for accuracy, Deepgram for live words as you speak, local for fully offline. Swap any time from the tray.</p>
+        <div class="h"><svg viewBox="0 0 24 24" fill="none" stroke="#e06c75" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v5h-5"/></svg><h3>Updates itself, silently</h3></div>
+        <p>Install once and you're done. Pipevoice checks for new versions in the background, verifies each one with SHA-256, and updates itself. No uninstall, no reinstall.</p>
       </div>
       <div class="card">
         <div class="h"><svg viewBox="0 0 24 24" fill="none" stroke="#e06c75" stroke-width="2"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg><h3>Light as a feather</h3></div>
@@ -320,6 +353,58 @@
         <p>Custom hotkey, vocabulary boosting for your jargon, word-fixes, auto-send, optional AI cleanup. Open source — fork it.</p>
       </div>
     </div>
+  </section>
+
+  <!-- WORKS WITH YOUR WHOLE STACK / CONNECTORS -->
+  <section id="stack">
+    <p class="eyebrow">Your stack, your call</p>
+    <h2>Works with your whole stack.</h2>
+    <p class="lead">Two stages, your choice at each. Pick where your words go on a spectrum: use the cloud you already pay for, run it free, or keep every byte on your machine. Same hotkey, same typing, different trade.</p>
+
+    <div class="spot" style="margin-top:44px">
+      <div>
+        <div class="ladder">
+          <div class="rung">
+            <span class="dot cloud"></span>
+            <div><b>Cloud</b><span class="rs">Your key, your provider. Deepgram streams live words as you speak, OpenAI Whisper batches for top accuracy. Audio goes to the provider you chose, never to us.</span></div>
+          </div>
+          <div class="rung">
+            <span class="dot free"></span>
+            <div><b>Free</b><span class="rs">No OpenAI credit required. Polish your text with Google Gemini's free tier or a free OpenRouter community model. Most people already have a Google account.</span></div>
+          </div>
+          <div class="rung">
+            <span class="dot offline"></span>
+            <div><b>Fully offline</b><span class="rs">Local Whisper transcribes, a local Ollama model polishes. No key, no cost, no internet. Nothing ever leaves your PC. The privacy maximalist's setup.</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="mini">
+        <div class="bar"><i style="background:#e06c75;width:9px;height:9px;border-radius:50%"></i><i style="background:#e5c07b;width:9px;height:9px;border-radius:50%"></i><i style="background:#98c379;width:9px;height:9px;border-radius:50%"></i><span class="t">offline mode &middot; airplane on</span></div>
+        <div class="body mono">
+          <span class="dim">transcribe</span>&nbsp;&nbsp;<span class="ok">Local Whisper</span> <span class="dim">&middot; no key</span><br/>
+          <span class="dim">polish</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ok">Ollama</span> <span class="dim">&middot; llama3.2</span><br/><br/>
+          <span class="ar">&#9211;</span> <span class="dim">network calls this session:</span> <span class="ok">0</span><span class="cur"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="roster">
+      <div class="rcol">
+        <div class="rhead"><span class="rlabel">Transcribe</span><span class="rsub">speech to text</span></div>
+        <div class="rrow"><span class="rname">Deepgram</span><span class="rdesc">streaming, live words as you speak</span><span class="chips"><span class="chip good">Fastest</span><span class="chip muted">Your key</span></span></div>
+        <div class="rrow"><span class="rname">OpenAI Whisper</span><span class="rdesc">batch transcribe, cleanest result</span><span class="chips"><span class="chip warn">Most accurate</span><span class="chip muted">Your key</span></span></div>
+        <div class="rrow"><span class="rname">Local Whisper</span><span class="rdesc">faster-whisper on your machine</span><span class="chips"><span class="chip good">Offline</span><span class="chip good">No key</span></span></div>
+      </div>
+      <div class="rcol">
+        <div class="rhead"><span class="rlabel">Polish</span><span class="rsub">optional Flow-mode cleanup: fillers, casing, punctuation</span></div>
+        <div class="rrow"><span class="rname">OpenAI</span><span class="rdesc">the default if you keep a key around</span><span class="chips"><span class="chip muted">Your key</span></span></div>
+        <div class="rrow"><span class="rname">Google Gemini</span><span class="rdesc">free tier, no OpenAI bill</span><span class="chips"><span class="chip good">Free</span></span></div>
+        <div class="rrow"><span class="rname">OpenRouter</span><span class="rdesc">free community models</span><span class="chips"><span class="chip good">Free</span></span></div>
+        <div class="rrow"><span class="rname">Ollama</span><span class="rdesc">a local LLM on your box</span><span class="chips"><span class="chip good">Offline</span><span class="chip good">No key</span></span></div>
+      </div>
+    </div>
+
+    <p class="cmp-note">Pair Local Whisper with Ollama and the whole pipeline is free, key-free, and 100% offline. Cloud connectors use your key, so audio goes only to the provider you picked, never to us. <a href="/privacy" style="color:var(--accent)">Privacy</a>.</p>
   </section>
 
   <!-- AI CODING SPOTLIGHT -->
@@ -386,7 +471,7 @@
     <h2>Running in a minute</h2>
     <div class="steps">
       <div class="step"><div class="n">01</div><h3>Install</h3><p>Download, run the installer. It opens quietly to your system tray.</p></div>
-      <div class="step"><div class="n">02</div><h3>Pick your engine</h3><p>Paste an OpenAI or Deepgram key — or choose <b>offline</b> and skip keys entirely.</p></div>
+      <div class="step"><div class="n">02</div><h3>Pick your connectors</h3><p>Bring a Deepgram or OpenAI key, polish for free with Gemini, or go <b>fully offline</b> (local Whisper + Ollama) and skip keys entirely.</p></div>
       <div class="step"><div class="n">03</div><h3>Hold &amp; talk</h3><p>Hold the hotkey, speak, release. Your words type where your cursor is.</p></div>
     </div>
   </section>
