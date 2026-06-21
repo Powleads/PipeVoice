@@ -236,7 +236,7 @@
   .chip.muted{color:var(--muted);background:rgba(154,161,173,.07)}
 
   /* content rewrite */
-/* none needed: new cards reuse .card/.h/h3/p; new FAQ entries reuse details/summary. The .grid is repeat(3,1fr) and collapses to 1fr under 780px, so 8 cards (2 full rows + 2) stay mobile-safe. */
+/* none needed: new cards reuse .card/.h/h3/p; new FAQ entries reuse details/summary. The .grid is repeat(3,1fr) and collapses to 1fr under 780px, so 9 cards (a clean 3x3) stay mobile-safe. */
 </style>
 </head>
 <body>
@@ -345,7 +345,7 @@
       </div>
       <div class="card">
         <div class="h"><svg viewBox="0 0 24 24" fill="none" stroke="#e06c75" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v5h-5"/></svg><h3>Updates itself, silently</h3></div>
-        <p>Install once and you're done. Pipevoice checks for new versions in the background, verifies each one with SHA-256, and updates itself. No uninstall, no reinstall.</p>
+        <p>Install once and you're done. Pipevoice checks for new versions in the background, verifies each one with SHA-256, and updates itself. Open the About window any time to see what's new or update on the spot. No uninstall, no reinstall.</p>
       </div>
       <div class="card">
         <div class="h"><svg viewBox="0 0 24 24" fill="none" stroke="#e06c75" stroke-width="2"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg><h3>Light as a feather</h3></div>
@@ -362,6 +362,10 @@
       <div class="card">
         <div class="h"><svg viewBox="0 0 24 24" fill="none" stroke="#e06c75" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9 9 0 0 0-6 2.3L3 8"/><path d="M3 3v5h5M12 8v4l3 2"/></svg><h3>Dictation history</h3></div>
         <p>Every transcript is saved locally on your PC. Open the tray History window to re-copy anything you dictated earlier, marked typed or clipboard. Stored only on your machine, nothing uploaded.</p>
+      </div>
+      <div class="card">
+        <div class="h"><svg viewBox="0 0 24 24" fill="none" stroke="#e06c75" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><h3>It adapts to each app</h3></div>
+        <p>Per-app profiles. Pipevoice spots the focused window and switches behaviour to match: raw text and a hands-free Enter in your terminal, polished and auto-sent in chat, no cleanup in your editor. Set the engine, cleanup, Enter and output once per app.</p>
       </div>
     </div>
   </section>
@@ -476,6 +480,27 @@
     </div>
   </section>
 
+  <!-- PER-APP PROFILES -->
+  <section id="profiles">
+    <div class="spot rev">
+      <div class="mini">
+        <div class="bar"><i style="background:#e06c75;width:9px;height:9px;border-radius:50%"></i><i style="background:#e5c07b;width:9px;height:9px;border-radius:50%"></i><i style="background:#98c379;width:9px;height:9px;border-radius:50%"></i><span class="t">app profiles</span></div>
+        <div class="body mono">
+          <span class="dim">terminal</span>&nbsp;&nbsp;<span class="ok">Deepgram</span> <span class="dim">&middot; raw &middot;</span> <span class="ar">&#9166;</span> <span class="dim">auto</span><br/>
+          <span class="dim">slack</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ok">polished</span> <span class="dim">&middot;</span> <span class="ar">&#9166;</span> <span class="dim">send</span><br/>
+          <span class="dim">vs&nbsp;code</span>&nbsp;&nbsp;&nbsp;<span class="ok">your words</span> <span class="dim">&middot; no cleanup</span><br/>
+          <span class="dim">notes</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ar">&#8594;</span> <span class="ok">clipboard</span><span class="cur"></span>
+        </div>
+      </div>
+      <div>
+        <p class="eyebrow">Knows where it's typing</p>
+        <h2>Every app, its own rules.</h2>
+        <p>One profile per app. Pipevoice watches which window has focus and applies that app's settings for the next thing you say, then resets. No mode switching, no menu diving.</p>
+        <p>Pick the engine, whether the AI polishes, whether it presses Enter for you, and whether the text is typed or sent to your clipboard, separately for each app. Your terminal stays raw and fast, your chat gets cleaned up and auto-sent, your editor keeps your words exactly as spoken.</p>
+      </div>
+    </div>
+  </section>
+
   <!-- SETUP -->
   <section id="how">
     <p class="eyebrow">Setup</p>
@@ -540,6 +565,8 @@
         <p>Yes. Voice commands are built in and toggleable: say "new line", "new paragraph" or "tab key" to format, "scratch that" or "cancel that" to discard, and end with "send it" or "press enter" to type your text and submit hands-free.</p></details>
       <details><summary>Are my past dictations saved? Can I get them back?</summary>
         <p>Yes. Every transcript is saved locally on your PC. Open the History window from the tray to re-copy anything you dictated earlier, marked typed or clipboard. It's local only, with nothing uploaded, and you can clear it whenever you like.</p></details>
+      <details><summary>Can different apps behave differently?</summary>
+        <p>Yes, that's per-app profiles. Pipevoice sees which app is focused and applies that app's settings automatically: the transcription engine, whether the AI cleans up your text, whether it presses Enter for you, and whether the words are typed or sent to your clipboard. Set your terminal to raw text with a hands-free Enter, your chat apps to polished and auto-sent, your editor to no cleanup, then never think about it again. Add a profile from the tray and pick the app from a searchable list.</p></details>
     </div>
   </section>
 
