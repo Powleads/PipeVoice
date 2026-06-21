@@ -4,7 +4,7 @@
 ; Produces installer\Output\Pipevoice-Setup.exe — a per-user install (no admin).
 
 #define AppName "Pipevoice"
-#define AppVersion "2.9.1"
+#define AppVersion "2.10.0"
 #define AppExe "Pipevoice.exe"
 
 [Setup]

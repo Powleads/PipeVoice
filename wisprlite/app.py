@@ -148,25 +148,55 @@ class App:
                 self._set_icon("idle")
                 return
 
-            # AI cleanup ("Flow mode") — OpenAI / Gemini / OpenRouter / local Ollama; falls back to raw.
-            from . import cleanup
+            # Spoken commands (terminal actions) — run on the RAW transcript so
+            # cleanup can't reword "scratch that" / "send it".
+            from . import commands
 
-            if self.cfg.ai_cleanup and cleanup.provider_ready(self.cfg.cleanup_provider):
-                self.overlay.set_state("transcribing", "Polishing…")
-                polished = cleanup.clean(text, self.cfg.cleanup_provider, self.cfg.cleanup_model,
-                                         self.cfg.language, self.cfg.speech_notes)
-                if polished:
-                    text = polished
+            cmd = commands.pre(text, self.cfg.voice_commands)
+            if cmd.discard:
+                self.overlay.set_state("done", "✗ scratched")
+                self._beep(440, 80)
+                self._set_icon("idle")
+                return
+            text = cmd.text
+
+            # AI cleanup ("Flow mode") — OpenAI / Gemini / OpenRouter / local Ollama; falls back to raw.
+            if text and self.cfg.ai_cleanup:
+                from . import cleanup
+
+                if cleanup.provider_ready(self.cfg.cleanup_provider):
+                    self.overlay.set_state("transcribing", "Polishing…")
+                    polished = cleanup.clean(text, self.cfg.cleanup_provider, self.cfg.cleanup_model,
+                                             self.cfg.language, self.cfg.speech_notes)
+                    if polished:
+                        text = polished
+
+            # inline formatting commands ("new line") — after cleanup so newlines survive
+            text = commands.inline(text, self.cfg.voice_commands)
 
             # user word-fixes, applied last so they always stick
             text = apply_replacements(text, self.cfg.replacements)
 
+            press_enter = self.cfg.auto_enter or cmd.press_enter
+            if not text and not press_enter:
+                self.overlay.hide()
+                self._set_icon("idle")
+                return
+
             if self._clipboard_only:
-                copy_clipboard(text)
-                self.overlay.set_state("done", "Copied to clipboard")
+                if text:
+                    copy_clipboard(text)
+                self.overlay.set_state("done", "Copied to clipboard" if text else "↵")
             else:
-                self.overlay.set_state("done", text)
-                type_text(text, self.cfg.output_mode, press_enter=self.cfg.auto_enter)
+                self.overlay.set_state("done", text or "↵")
+                type_text(text, self.cfg.output_mode, press_enter=press_enter)
+            if self.cfg.history_enabled and text:
+                try:
+                    from . import history
+
+                    history.record(text, "clipboard" if self._clipboard_only else "typed")
+                except Exception:
+                    pass
             self._beep(990, 60)
             self._set_icon("idle")
         finally:
@@ -239,6 +269,21 @@ class App:
                 subprocess.Popen([_pythonw(), "-m", "wisprlite", "--settings"], cwd=parent)
         except Exception as exc:
             self._fail(f"settings: {exc}")
+
+    def open_history(self) -> None:
+        import os
+        import subprocess
+
+        try:
+            if getattr(sys, "frozen", False):
+                subprocess.Popen([sys.executable, "--history"])
+            else:
+                from .autostart import _pythonw
+
+                parent = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+                subprocess.Popen([_pythonw(), "-m", "wisprlite", "--history"], cwd=parent)
+        except Exception as exc:
+            self._fail(f"history: {exc}")
 
     def autostart_enabled(self) -> bool:
         return autostart.is_enabled()

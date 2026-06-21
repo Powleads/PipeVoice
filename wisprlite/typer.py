@@ -23,10 +23,10 @@ def apply_replacements(text: str, mapping: dict) -> str:
 
 
 def type_text(text: str, mode: str = "type", press_enter: bool = False) -> None:
-    if not text:
+    if not text and not press_enter:
         return
 
-    if mode == "paste":
+    if text and mode == "paste":
         try:
             import pyperclip
 
@@ -50,7 +50,8 @@ def type_text(text: str, mode: str = "type", press_enter: bool = False) -> None:
         except Exception:
             pass  # pyperclip missing or failed -> fall through to typing
 
-    keyboard.write(text, delay=0)
+    if text:
+        keyboard.write(text, delay=0)
     if press_enter:
         time.sleep(0.05)
         keyboard.send("enter")

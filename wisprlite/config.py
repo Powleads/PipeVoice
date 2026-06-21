@@ -77,6 +77,9 @@ class Config:
     speech_notes: str = ""          # free text about the user's accent / speech, fed to AI cleanup
     replacements: dict = field(default_factory=dict)  # {wrong: right} post-fixes
     key_prompt_skipped_for: str = ""  # engine the user dismissed the key prompt for (stops re-nagging)
+    voice_commands: bool = True       # spoken commands: "new line", "scratch that", "send it"
+    history_enabled: bool = True      # keep a local dictation history (history.jsonl)
+    history_size: int = 50            # entries shown in the history viewer
 
     @classmethod
     def load(cls) -> "Config":
