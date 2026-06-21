@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Pipevoice — free voice typing for Windows that types into any app</title>
-<meta name="description" content="Push-to-talk voice typing for Windows. Hold a key, talk, release — your words land in any app: terminal, editor, browser. Dictate to Claude Code. Private by default, free forever, open source." />
+<title>Pipevoice: free, private voice typing for Windows that types into any app</title>
+<meta name="description" content="Push-to-talk voice typing for Windows. Hold a key, talk, release, and your words type into any app: terminal, editor, browser. Three transcription engines plus four AI-polish providers, including free Gemini and a 100% offline Local-Whisper-plus-Ollama path. Voice commands, dictation history, silent auto-updates. No telemetry, free forever, open source." />
 <link rel="canonical" href="https://pipevoice.app/" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://pipevoice.app/" />
-<meta property="og:title" content="Pipevoice — free, private voice typing for Windows" />
-<meta property="og:description" content="Talk into any app on Windows — terminal, editor, browser. Dictate to Claude Code. Your voice never leaves your PC. Free forever, open source." />
+<meta property="og:title" content="Pipevoice: free, private voice typing for Windows" />
+<meta property="og:description" content="Talk into any app on Windows: terminal, editor, browser. Dictate to Claude Code. Pick your stack at each stage: cloud with your key, free polish with Gemini, or 100% offline so nothing leaves your PC. No telemetry, free forever, open source." />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Pipevoice — free, private voice typing for Windows" />
-<meta name="twitter:description" content="Talk into any app on Windows — including your terminal running Claude Code. Private by default, free forever, open source." />
+<meta name="twitter:title" content="Pipevoice: free, private voice typing for Windows" />
+<meta name="twitter:description" content="Talk into any app on Windows, including your terminal running Claude Code. Three transcription engines, four polish providers, free Gemini, and a fully offline path. No telemetry, free forever, open source." />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231b1e24'/%3E%3Crect x='26' y='15' width='12' height='23' rx='6' fill='%23e06c75'/%3E%3Cpath d='M21 32a11 11 0 0 0 22 0' stroke='%23e06c75' stroke-width='3' fill='none'/%3E%3Cline x1='32' y1='43' x2='32' y2='50' stroke='%23e06c75' stroke-width='3'/%3E%3Cline x1='24' y1='50' x2='40' y2='50' stroke='%23e06c75' stroke-width='3'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -234,6 +234,9 @@
   .chip.good{color:var(--good);border-color:rgba(152,195,121,.4);background:rgba(152,195,121,.08)}
   .chip.warn{color:var(--warn);border-color:rgba(229,192,123,.4);background:rgba(229,192,123,.08)}
   .chip.muted{color:var(--muted);background:rgba(154,161,173,.07)}
+
+  /* content rewrite */
+/* none needed: new cards reuse .card/.h/h3/p; new FAQ entries reuse details/summary. The .grid is repeat(3,1fr) and collapses to 1fr under 780px, so 8 cards (2 full rows + 2) stay mobile-safe. */
 </style>
 </head>
 <body>
@@ -263,20 +266,20 @@
   <header class="hero">
     <span class="kicker"><span class="d"></span> Windows 10 &amp; 11 · free forever · open source</span>
     <h1>Talk faster<br />than you <span class="c">type.</span></h1>
-    <p class="sub">Push-to-talk voice typing for Windows that lands in <b>any</b> app — your
-      terminal, editor, browser, chat box. <b>Your voice never leaves your PC.</b>
-      No account. No subscription. Ever.</p>
+    <p class="sub">Push-to-talk voice typing for Windows that lands in <b>any</b> app: your
+      terminal, editor, browser, chat box. Cloud with your key, <b>free</b> AI polish with Gemini,
+      or go <b>100% offline</b> so nothing leaves your PC. No account. No subscription. Ever.</p>
     <div class="cta">
       <a class="btn btn-primary" data-download href="https://github.com/Powleads/PipeVoice/releases/latest/download/Pipevoice-Setup.exe">↓ Download for Windows</a>
       <a class="btn btn-ghost" href="https://github.com/Powleads/PipeVoice">View source</a>
     </div>
-    <p class="fine">one-click install · auto-updates itself · bring your own key, or run 100% offline</p>
+    <p class="fine">one-click install · auto-updates itself · bring your own key, polish free with Gemini, or run 100% offline</p>
 
     <div class="stage">
       <div class="win">
         <div class="bar">
           <i style="background:#e06c75"></i><i style="background:#e5c07b"></i><i style="background:#98c379"></i>
-          <span class="t">terminal — claude code</span>
+          <span class="t">terminal · claude code</span>
         </div>
         <div class="body">
           <span class="p">you@pc</span><span class="dim">:~$</span> refactor the auth middleware and add a test for the expired-token case<span class="cur"></span>
@@ -326,19 +329,19 @@
   <section id="features">
     <p class="eyebrow">What it does</p>
     <h2>Less typing. No new habits.</h2>
-    <p class="lead">It types real keystrokes into the app you're already in — not a special box you paste from.</p>
+    <p class="lead">It types real keystrokes into the app you're already in, not a special box you paste from.</p>
     <div class="grid">
       <div class="card">
         <div class="h"><svg viewBox="0 0 24 24" fill="none" stroke="#e06c75" stroke-width="2"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 10h.01M11 10h.01M15 10h.01M7 14h10"/></svg><h3>Types into anything</h3></div>
-        <p>Terminal, editor, browser, chat box. Real keystrokes go to the focused window — nothing to copy or paste.</p>
+        <p>Terminal, editor, browser, chat box. Real keystrokes go to the focused window, nothing to copy or paste.</p>
       </div>
       <div class="card">
         <div class="h"><svg viewBox="0 0 24 24" fill="none" stroke="#e06c75" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><h3>Private by default</h3></div>
-        <p>Pick the offline engine and your voice never leaves your machine. No account, no telemetry, no servers of ours. Open source — verify it.</p>
+        <p>Run the fully offline path (Local Whisper plus a local Ollama model) and nothing leaves your machine. No account, no telemetry, no servers of ours. Open source, so verify it.</p>
       </div>
       <div class="card">
         <div class="h"><svg viewBox="0 0 24 24" fill="none" stroke="#e06c75" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3m13-5v3a2 2 0 0 1-2 2h-3"/><circle cx="12" cy="12" r="2.5"/></svg><h3>Built for AI coding</h3></div>
-        <p>Dictate prompts straight into Claude Code, Cursor, or any terminal — 3–5× faster than typing them. Talk the way you think.</p>
+        <p>Dictate prompts straight into Claude Code, Cursor, or any terminal, 3 to 5 times faster than typing them. Talk the way you think.</p>
       </div>
       <div class="card">
         <div class="h"><svg viewBox="0 0 24 24" fill="none" stroke="#e06c75" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v5h-5"/></svg><h3>Updates itself, silently</h3></div>
@@ -346,11 +349,19 @@
       </div>
       <div class="card">
         <div class="h"><svg viewBox="0 0 24 24" fill="none" stroke="#e06c75" stroke-width="2"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg><h3>Light as a feather</h3></div>
-        <p>A quiet tray app, not a memory hog. No Electron, no background bloat — it waits in the tray until you hold the key.</p>
+        <p>A quiet tray app, not a memory hog. No Electron, no background bloat. It waits in the tray until you hold the key.</p>
       </div>
       <div class="card">
         <div class="h"><svg viewBox="0 0 24 24" fill="none" stroke="#e06c75" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.5-2.3 1a7 7 0 0 0-1.7-1l-.4-2.5h-4l-.4 2.5a7 7 0 0 0-1.7 1l-2.3-1-2 3.5 2 1.5a7 7 0 0 0 0 2l-2 1.5 2 3.5 2.3-1a7 7 0 0 0 1.7 1l.4 2.5h4l.4-2.5a7 7 0 0 0 1.7-1l2.3 1 2-3.5-2-1.5a7 7 0 0 0 .1-1z"/></svg><h3>Yours to tune</h3></div>
-        <p>Custom hotkey, vocabulary boosting for your jargon, word-fixes, auto-send, optional AI cleanup. Open source — fork it.</p>
+        <p>Two hotkeys (type or copy to clipboard), accent and language picker, free-text speech notes, vocabulary boosting and word-fixes for your jargon, push-to-talk or toggle, paste-or-type output, plus min-recording, paste-speed and Deepgram-timeout controls. Open source, so fork it.</p>
+      </div>
+      <div class="card">
+        <div class="h"><svg viewBox="0 0 24 24" fill="none" stroke="#e06c75" stroke-width="2"><path d="M4 6h16M4 12h10M4 18h7"/></svg><h3>Talk in commands</h3></div>
+        <p>Say "new line", "new paragraph" or "tab key" to format as you go. Say "scratch that" to discard the last bit, or end with "send it" to type and press Enter hands-free. Toggle it on or off.</p>
+      </div>
+      <div class="card">
+        <div class="h"><svg viewBox="0 0 24 24" fill="none" stroke="#e06c75" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9 9 0 0 0-6 2.3L3 8"/><path d="M3 3v5h5M12 8v4l3 2"/></svg><h3>Dictation history</h3></div>
+        <p>Every transcript is saved locally on your PC. Open the tray History window to re-copy anything you dictated earlier, marked typed or clipboard. Stored only on your machine, nothing uploaded.</p>
       </div>
     </div>
   </section>
@@ -413,10 +424,10 @@
       <div>
         <p class="eyebrow">Made for the terminal</p>
         <h2>Claude Code's voice stops at the CLI.<br />Pipevoice doesn't.</h2>
-        <p>Anthropic shipped <span class="mono">/voice</span> in 2026 — but it only types inside the Claude CLI.
+        <p>Anthropic shipped <span class="mono">/voice</span> in 2026, but it only types inside the Claude CLI.
           Your editor, browser, Slack, Jira and terminal panes are still keyboard-only.</p>
-        <p>Pipevoice types your words into <b>all of them</b>. Hold a key, say the prompt, release —
-          it lands wherever your cursor is. You think at ~150 wpm and type at ~40. Close the gap.</p>
+        <p>Pipevoice types your words into <b>all of them</b>. Hold a key, say the prompt, release,
+          and it lands wherever your cursor is. You think at ~150 wpm and type at ~40. Close the gap.</p>
       </div>
       <div class="mini">
         <div class="bar"><i style="background:#e06c75;width:9px;height:9px;border-radius:50%"></i><i style="background:#e5c07b;width:9px;height:9px;border-radius:50%"></i><i style="background:#98c379;width:9px;height:9px;border-radius:50%"></i><span class="t">~/project</span></div>
@@ -471,7 +482,7 @@
     <h2>Running in a minute</h2>
     <div class="steps">
       <div class="step"><div class="n">01</div><h3>Install</h3><p>Download, run the installer. It opens quietly to your system tray.</p></div>
-      <div class="step"><div class="n">02</div><h3>Pick your connectors</h3><p>Bring a Deepgram or OpenAI key, polish for free with Gemini, or go <b>fully offline</b> (local Whisper + Ollama) and skip keys entirely.</p></div>
+      <div class="step"><div class="n">02</div><h3>Pick your connectors</h3><p>Two stages, your call at each. Transcribe with Deepgram, OpenAI Whisper or local Whisper, then optionally polish with OpenAI, free Gemini or OpenRouter, or local Ollama. Pair local Whisper with Ollama to skip every key and stay <b>fully offline</b>.</p></div>
       <div class="step"><div class="n">03</div><h3>Hold &amp; talk</h3><p>Hold the hotkey, speak, release. Your words type where your cursor is.</p></div>
     </div>
   </section>
@@ -481,7 +492,7 @@
     <div class="signup">
       <p class="eyebrow">Stay in the loop</p>
       <h2>Get build notes &amp; early access to Pro.</h2>
-      <p class="lead">I ship updates often — new engines, better accuracy, and a managed-key Pro for people who'd rather not touch an API key. Drop your email and I'll keep you posted. No spam, unsubscribe anytime.</p>
+      <p class="lead">I ship updates often: new connectors, better accuracy, and a managed-key Pro for people who'd rather not touch an API key. Drop your email and I'll keep you posted. No spam, unsubscribe anytime.</p>
       <form id="signup" novalidate>
         <label class="sr-only" for="su-email">Email address</label>
         <input id="su-email" type="email" name="email" placeholder="you@email.com" required autocomplete="email" />
@@ -499,7 +510,7 @@
         <button class="btn btn-primary" type="submit">Notify me</button>
         <p class="err" data-err role="alert"></p>
       </form>
-      <p class="ok" id="signup-ok" tabindex="-1" role="status" aria-live="polite" style="display:none">Thanks — you're on the list. ✦</p>
+      <p class="ok" id="signup-ok" tabindex="-1" role="status" aria-live="polite" style="display:none">Thanks, you're on the list. ✦</p>
       <p class="fine">no spam · just shipping updates</p>
     </div>
   </section>
@@ -510,21 +521,25 @@
     <h2>Questions</h2>
     <div class="faq">
       <details><summary>Is it really free?</summary>
-        <p>Yes — free forever. Use the offline engine at zero cost, or bring your own OpenAI/Deepgram key and pay the provider directly (cents a day). A managed-key <b>Pro</b> is coming later for people who want zero setup, but the core tool stays free.</p></details>
+        <p>Yes, free forever. Run the fully offline path (local Whisper plus Ollama) at zero cost, polish for free with Google Gemini or OpenRouter community models, or bring your own OpenAI/Deepgram key and pay the provider directly (cents a day). A managed-key <b>Pro</b> is coming later for people who want zero setup, but the core tool stays free.</p></details>
       <details><summary>How is this different from Wispr Flow?</summary>
-        <p>Pipevoice is free (no $144/yr subscription), runs <b>offline</b> so your voice can stay on your PC, is built Windows-first instead of a Mac port, and is fully open source — you can read every line. The trade-off: you bring your own key for the cloud engines.</p></details>
+        <p>Pipevoice is free (no $144/yr subscription), built Windows-first instead of a Mac port, and fully open source so you can read every line. It also gives you the choice Wispr Flow doesn't: pick your transcription engine and your AI-polish provider separately. Use the cloud with your own key, polish for free with Gemini or OpenRouter, or run the whole pipeline 100% offline with local Whisper and Ollama.</p></details>
       <details><summary>Does it work with Claude Code and Cursor?</summary>
-        <p>Yes. Pipevoice types real keystrokes into whatever window is focused — a terminal running Claude Code, Cursor's chat, your editor, the browser. Anything you can type into, you can talk into.</p></details>
+        <p>Yes. Pipevoice types real keystrokes into whatever window is focused: a terminal running Claude Code, Cursor's chat, your editor, the browser. Anything you can type into, you can talk into.</p></details>
       <details><summary>Can it handle my accent?</summary>
         <p>Pick your English variant in the tray (British, US, Australian, Indian, New Zealand) and the engine switches to the matching model. For a non-native accent, a stutter, or heavy filler words, add a line of "speech notes" like "native Russian speaker" and the AI cleanup adjusts for it. The engines are trained on a wide range of accents to begin with.</p></details>
       <details><summary>Can I dictate to my clipboard instead of typing?</summary>
         <p>Yes. A second hotkey (Right Ctrl + Shift by default, and configurable) records and copies the result straight to your clipboard without typing into the focused window. Handy for giving feedback while you read one window, then pasting into another.</p></details>
-      <details><summary>Windows says "unrecognised app" — is it safe?</summary>
-        <p>Yes. That SmartScreen warning shows for any app without a paid code-signing certificate. Click <b>More info → Run anyway</b>. It's open source — read every line on <a href="https://github.com/Powleads/PipeVoice">GitHub</a>.</p></details>
+      <details><summary>Windows says "unrecognised app": is it safe?</summary>
+        <p>Yes. That SmartScreen warning shows for any app without a paid code-signing certificate. Click <b>More info → Run anyway</b>. It's open source, read every line on <a href="https://github.com/Powleads/PipeVoice">GitHub</a>.</p></details>
       <details><summary>Is my voice uploaded anywhere?</summary>
-        <p>Only to the engine you pick. Cloud engines send audio to OpenAI/Deepgram to transcribe. The <b>local engine sends nothing</b> off your computer. Pipevoice has no servers and no telemetry.</p></details>
+        <p>Only to the connector you pick, and never to us. A cloud transcription engine (Deepgram or OpenAI Whisper) sends your audio to that provider on your key. <b>Local Whisper sends nothing.</b> The optional polish stage only ever sends <b>text</b>, not audio: OpenAI, Gemini and OpenRouter receive the transcript to clean up, while a local Ollama model keeps even that on your machine. Pick local Whisper plus Ollama and zero bytes leave your PC. Pipevoice has no servers and no telemetry.</p></details>
       <details><summary>Which engine should I use?</summary>
-        <p>Whisper for accuracy, Deepgram for live words as you speak, local for privacy and offline use. Switch any time from the tray.</p></details>
+        <p>It's a two-stage choice. For transcription: Deepgram streams live words as you speak (fastest), OpenAI Whisper batches for the cleanest accuracy, and local Whisper runs fully offline with no key. For optional polish: OpenAI if you keep a key, free Gemini or OpenRouter to skip the OpenAI bill, or local Ollama to stay offline. Pair local Whisper with Ollama and the whole pipeline is free, key-free and 100% offline. Switch either stage any time from the tray.</p></details>
+      <details><summary>Can I say "new line" or "send it" while dictating?</summary>
+        <p>Yes. Voice commands are built in and toggleable: say "new line", "new paragraph" or "tab key" to format, "scratch that" or "cancel that" to discard, and end with "send it" or "press enter" to type your text and submit hands-free.</p></details>
+      <details><summary>Are my past dictations saved? Can I get them back?</summary>
+        <p>Yes. Every transcript is saved locally on your PC. Open the History window from the tray to re-copy anything you dictated earlier, marked typed or clipboard. It's local only, with nothing uploaded, and you can clear it whenever you like.</p></details>
     </div>
   </section>
 
@@ -539,11 +554,11 @@
 
   <footer>
     <div class="foot-row">
-      <span>Pipevoice — free, private voice typing for Windows.</span>
+      <span>Pipevoice: free, private voice typing for Windows.</span>
       <span><a href="/privacy">Privacy</a> &nbsp;·&nbsp; <a href="https://github.com/Powleads/PipeVoice">github.com/Powleads/PipeVoice ↗</a></span>
     </div>
     <div class="made">
-      Built by the team behind <a class="se" href="https://engine.signalsprint.io">SignalEngine</a> — agentic AI outbound for founders &amp; agencies.
+      Built by the team behind <a class="se" href="https://engine.signalsprint.io">SignalEngine</a>, agentic AI outbound for founders &amp; agencies.
       <a href="https://engine.signalsprint.io">Take a look ↗</a>
     </div>
   </footer>
@@ -574,7 +589,7 @@
       <button class="btn btn-primary" type="submit">Keep me posted</button>
       <p class="err" data-err role="alert"></p>
     </form>
-    <p class="ok" id="dl-ok" tabindex="-1" role="status" aria-live="polite" style="display:none">Thanks — enjoy Pipevoice. ✦</p>
+    <p class="ok" id="dl-ok" tabindex="-1" role="status" aria-live="polite" style="display:none">Thanks, enjoy Pipevoice. ✦</p>
     <button class="skip" type="button" data-close>No thanks, just downloading</button>
   </div>
 </div>
