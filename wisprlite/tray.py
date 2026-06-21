@@ -88,6 +88,7 @@ class Tray:
             )),
             Menu.SEPARATOR,
             Item("Settings…", lambda i, it: app.open_settings(), default=True),
+            Item("History…", lambda i, it: app.open_history()),
             Item("Show overlay", lambda i, it: app.toggle_overlay(),
                  checked=lambda it: app.cfg.overlay),
             Item("Sounds", lambda i, it: app.toggle_sounds(),

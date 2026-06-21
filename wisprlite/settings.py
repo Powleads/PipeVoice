@@ -282,6 +282,8 @@ def main(first_run: bool = False) -> None:
     sounds_var = tk.BooleanVar(value=cfg.sounds)
     autostart_var = tk.BooleanVar(value=autostart.is_enabled())
     auto_update_var = tk.BooleanVar(value=cfg.auto_update)
+    voice_commands_var = tk.BooleanVar(value=cfg.voice_commands)
+    history_var = tk.BooleanVar(value=cfg.history_enabled)
 
     def combo(var, options, width=26):
         c = ttk.Combobox(frm, textvariable=var, values=options, state="readonly", width=width)
@@ -397,6 +399,9 @@ def main(first_run: bool = False) -> None:
     ttk.Checkbutton(frm, text="Press Enter after typing (auto-send)",
                     variable=auto_enter_var).grid(row=row, column=0, columnspan=3,
                                                   sticky="w", padx=14, pady=3); row += 1
+    ttk.Checkbutton(frm, text="Spoken commands (\"new line\", \"scratch that\", \"send it\")",
+                    variable=voice_commands_var).grid(row=row, column=0, columnspan=3,
+                                                      sticky="w", padx=14, pady=3); row += 1
     label("Vocabulary", "names/jargon, comma-sep"); entry(vocab_var); row += 1
     label("Word fixes", "wrong=right, comma-sep"); entry(fixes_var); row += 1
     label("Speech notes", "accent / stutter / fillers — guides AI cleanup"); entry(speech_notes_var); row += 1
@@ -410,6 +415,8 @@ def main(first_run: bool = False) -> None:
     ttk.Checkbutton(frm, text="Start on Windows login", variable=autostart_var).grid(
         row=row, column=0, columnspan=2, sticky="w", padx=14, pady=3); row += 1
     ttk.Checkbutton(frm, text="Automatic updates (check on startup)", variable=auto_update_var).grid(
+        row=row, column=0, columnspan=2, sticky="w", padx=14, pady=3); row += 1
+    ttk.Checkbutton(frm, text="Keep a local dictation history", variable=history_var).grid(
         row=row, column=0, columnspan=2, sticky="w", padx=14, pady=3); row += 1
 
     # --- Save / Cancel (live in the fixed footer) ---
@@ -431,6 +438,8 @@ def main(first_run: bool = False) -> None:
         cfg.overlay = bool(overlay_var.get())
         cfg.sounds = bool(sounds_var.get())
         cfg.auto_update = bool(auto_update_var.get())
+        cfg.voice_commands = bool(voice_commands_var.get())
+        cfg.history_enabled = bool(history_var.get())
         cfg.ai_cleanup = bool(ai_cleanup_var.get())
         cfg.cleanup_provider = value_for(cleanup_var, CLEANUP_PROVIDERS)
         cfg.cleanup_model = cleanup_model_var.get().strip()

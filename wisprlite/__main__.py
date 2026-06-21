@@ -2,6 +2,8 @@ import sys
 
 if "--settings" in sys.argv:
     from .settings import main
+elif "--history" in sys.argv:
+    from .history import main
 else:
     from .app import main
 
