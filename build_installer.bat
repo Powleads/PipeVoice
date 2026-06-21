@@ -6,8 +6,8 @@ cd /d "%~dp0"
 
 echo [1/2] Building Pipevoice.exe with PyInstaller...
 call build_exe.bat
-if not exist "dist\Pipevoice.exe" (
-    echo ERROR: dist\Pipevoice.exe was not created. Aborting.
+if not exist "dist\Pipevoice\Pipevoice.exe" (
+    echo ERROR: dist\Pipevoice\Pipevoice.exe was not created. Aborting.
     pause
     exit /b 1
 )
