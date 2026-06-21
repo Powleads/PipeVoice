@@ -5,7 +5,7 @@ cd /d "%~dp0"
 call .venv\Scripts\activate.bat
 pip install pyinstaller
 if not exist "assets\wisprlite.ico" python assets\make_icon.py
-pyinstaller --noconfirm --clean --noconsole --onefile --name Pipevoice ^
+pyinstaller --noconfirm --clean --noconsole --onedir --noupx --name Pipevoice ^
     --icon assets\wisprlite.ico ^
     --add-data "assets\wisprlite.ico;assets" ^
     --collect-all deepgram ^
@@ -15,5 +15,5 @@ pyinstaller --noconfirm --clean --noconsole --onefile --name Pipevoice ^
     --collect-all PIL ^
     launch.py
 echo.
-echo Done. See dist\Pipevoice.exe
+echo Done. See dist\Pipevoice\Pipevoice.exe
 echo (Local Whisper downloads its model on first use; the exe stays small.)

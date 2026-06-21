@@ -4,7 +4,7 @@
 ; Produces installer\Output\Pipevoice-Setup.exe — a per-user install (no admin).
 
 #define AppName "Pipevoice"
-#define AppVersion "2.18.0"
+#define AppVersion "2.19.0"
 #define AppExe "Pipevoice.exe"
 
 [Setup]
@@ -27,7 +27,10 @@ SetupIconFile=..\assets\wisprlite.ico
 UninstallDisplayIcon={app}\{#AppExe}
 
 [Files]
-Source: "..\dist\{#AppExe}"; DestDir: "{app}"; Flags: ignoreversion
+; onedir build: bundle the whole PyInstaller folder (exe + _internal/ DLLs).
+; This avoids the onefile _MEI runtime extraction that broke updates with
+; "Failed to load Python DLL".
+Source: "..\dist\Pipevoice\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\.env.example"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\README.md"; DestDir: "{app}"; Flags: ignoreversion
 ; Seed a real .env on first install only (user pastes their key into it).
