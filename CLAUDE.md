@@ -11,12 +11,11 @@ project lives one level down and the name drops an "e":
 wisperlite/                 <- working dir (NOT a git repo)
   wisprlite/                <- project root + git repo (.git is here). Run all commands from here.
     wisprlite/              <- the Python package (app.py, engines/, ...)
-    wisprlitevercel/        <- UNRELATED static marketing site + Vercel function (see below)
     assets/  installer/  *.bat  launch.py  requirements.txt
 ```
 
-Almost everything below assumes you have `cd wisprlite` first. The two `wisprlite*` siblings
-ship and deploy independently — a desktop app and a web landing page that share nothing but a name.
+Almost everything below assumes you have `cd wisprlite` first. This repo is the **desktop app only**.
+The pipevoice.app website + marketing live in a separate private repo (`Powleads/pipevoice-site`).
 
 ## Commands (run from `wisprlite/`, Windows)
 
@@ -49,4 +48,3 @@ the hotkey to record → transcribe → type, and owns the tray icon and overlay
 - **Deepgram SDK is pinned to v3** (`deepgram-sdk>=3,<4` in `requirements.txt`) — v4 changed the API. `deepgram_engine.py` deliberately writes event handlers as `*args/**kwargs` (via the `_pick` helper) because callback signatures shifted across v3 minor versions; don't "tidy" them into fixed signatures.
 - **Elevated terminals.** Windows blocks keystroke injection from a normal process into an *administrator* window. If the target terminal is elevated, WisprLite must run elevated too.
 - **No Enter is sent by default** — text lands at the cursor for review (`auto_enter` config gates the hands-free send).
-- **`wisprlitevercel/` is unrelated to the app.** It's a static landing page plus one Vercel serverless function (`api/subscribe.js`) that adds emails to Resend audiences. It has its own env vars (`RESEND_*`) and deploy lifecycle — changes there never affect the desktop app and vice versa.
