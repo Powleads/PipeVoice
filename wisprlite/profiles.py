@@ -49,7 +49,7 @@ ACCENT = "#e06c75"
 
 P_ENGINES = [("", "(app default)"), ("deepgram", "Deepgram"), ("openai", "OpenAI"), ("local", "Local")]
 P_OUTPUTS = [("type", "Type"), ("paste", "Paste"), ("clipboard", "Clipboard")]
-P_STYLES = [("tidy", "Tidy — clean up"), ("prompt", "Prompt — for AI tools"), ("custom", "Custom…")]
+P_STYLES = [("", "(app default)"), ("tidy", "Tidy — clean up"), ("prompt", "Prompt — for AI tools"), ("custom", "Custom…")]
 
 # Common apps so popular targets appear even when they aren't currently running.
 # Full product names so a natural search ("visual studio code") matches.
@@ -258,8 +258,10 @@ def main() -> None:
                 "ai_cleanup": bool(card["cleanup"].get()),
                 "auto_enter": bool(card["autoenter"].get()),
                 "output_mode": _value_for(card["output"].get(), P_OUTPUTS),
-                "cleanup_style": _value_for(card["style"].get(), P_STYLES),
             }
+            sty = _value_for(card["style"].get(), P_STYLES)
+            if sty:
+                ov["cleanup_style"] = sty
             ci = card["instruction"].get().strip()
             if ci:
                 ov["cleanup_instruction"] = ci
