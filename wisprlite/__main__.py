@@ -8,6 +8,8 @@ elif "--about" in sys.argv:
     from .about import main
 elif "--profiles" in sys.argv:
     from .profiles import main
+elif "--mcp" in sys.argv:
+    from .mcp_shim import main
 else:
     from .app import main
 

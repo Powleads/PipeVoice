@@ -15,3 +15,4 @@ Pillow>=10.0          # renders the tray icon
 pyperclip>=1.8        # "Paste" output mode
 
 # tkinter (the overlay HUD) ships with the standard Windows Python installer.
+mcp>=1.2  # MCP SDK — only imported by the --mcp stdio shim
