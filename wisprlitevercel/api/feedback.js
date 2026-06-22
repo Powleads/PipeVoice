@@ -5,10 +5,8 @@
 // Required env: RESEND_API_KEY
 // Optional env:
 //   FEEDBACK_TO    where feedback is emailed (default james@powleads.com)
-//   FEEDBACK_FROM  Resend "from" (default "PipeVoice <onboarding@resend.dev>" — works
-//                  with NO verified domain when the recipient is the Resend account
-//                  owner; switch to e.g. "PipeVoice <feedback@pipevoice.app>" once
-//                  that domain is a verified Resend sender)
+//   FEEDBACK_FROM  Resend "from" (default "PipeVoice <hello@signalsprint.io>", a
+//                  verified Resend sender on signalsprint.io). Override via env if needed.
 //   ALLOWED_ORIGINS  extra browser origins to accept
 //
 // The app is open source, so a baked-in client secret would be public and pointless.
@@ -77,7 +75,7 @@ export default async function handler(req, res) {
   const key = process.env.RESEND_API_KEY;
   if (!key) { console.error("feedback: missing RESEND_API_KEY"); return res.status(500).json({ error: "server_error" }); }
   const to = process.env.FEEDBACK_TO || "james@powleads.com";
-  const from = process.env.FEEDBACK_FROM || "PipeVoice <onboarding@resend.dev>";
+  const from = process.env.FEEDBACK_FROM || "PipeVoice <hello@signalsprint.io>";
 
   try {
     const r = await fetch("https://api.resend.com/emails", {
