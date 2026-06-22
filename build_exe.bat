@@ -14,6 +14,9 @@ pyinstaller --noconfirm --clean --noconsole --onedir --noupx --name Pipevoice ^
     --collect-all ctranslate2 ^
     --collect-all pystray ^
     --collect-all PIL ^
+    --collect-all mcp ^
+    --collect-all pydantic ^
+    --collect-all anyio ^
     launch.py
 echo.
 echo Done. See dist\Pipevoice\Pipevoice.exe
