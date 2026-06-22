@@ -18,16 +18,24 @@ MUTED = "#94a3b8"
 ACCENT = "#e06c75"
 
 PROVIDER = {
-    "openai": ("OpenAI", "OPENAI_API_KEY", "https://platform.openai.com/api-keys", "sk-..."),
-    "deepgram": ("Deepgram", "DEEPGRAM_API_KEY", "https://console.deepgram.com/", "your key"),
+    "gemini": ("Gemini", "GEMINI_API_KEY", "https://aistudio.google.com/apikey", "AIza…",
+               "Free — no credit card. This same key also powers AI polish."),
+    "groq": ("Groq", "GROQ_API_KEY", "https://console.groq.com/keys", "gsk_…",
+             "Free dev tier — fast, accurate Whisper transcription."),
+    "deepgram": ("Deepgram", "DEEPGRAM_API_KEY", "https://console.deepgram.com/", "your key",
+                 "$200 free credit on signup — no card. About 430 hours."),
 }
 
 
 def has_key(engine: str) -> bool:
-    if engine == "openai":
-        return bool(config.openai_key())
+    if engine == "gemini":
+        return bool(config.gemini_key())
+    if engine == "groq":
+        return bool(config.groq_key())
     if engine == "deepgram":
         return bool(config.deepgram_key())
+    if engine == "openai":
+        return bool(config.openai_key())  # legacy configs only
     return True  # local needs no key
 
 
@@ -48,7 +56,7 @@ def _dialog(cfg) -> None:
     import tkinter as tk
 
     engine = cfg.engine
-    label, env_name, url, placeholder = PROVIDER[engine]
+    label, env_name, url, placeholder, note = PROVIDER[engine]
 
     root = tk.Tk()
     root.title("Welcome to Pipevoice")
@@ -68,6 +76,8 @@ def _dialog(cfg) -> None:
              font=("Segoe UI", 18, "bold")).pack(anchor="w")
     tk.Label(wrap, text=f"Paste your {label} key — it stays on this PC.",
              bg=BG, fg=FG, font=("Segoe UI", 11)).pack(anchor="w", pady=(2, 3))
+    tk.Label(wrap, text=note, bg=BG, fg="#98c379",
+             font=("Segoe UI", 9)).pack(anchor="w", pady=(0, 2))
     tk.Label(wrap, text="No key? Use the offline engine instead — free and fully private.",
              bg=BG, fg=MUTED, font=("Segoe UI", 9)).pack(anchor="w", pady=(0, 14))
 
@@ -109,9 +119,6 @@ def _dialog(cfg) -> None:
         k = (k or "").strip()
         if not k:
             err.config(text="Paste a key, or choose Use offline.")
-            return False
-        if engine == "openai" and not k.startswith("sk-"):
-            err.config(text="That doesn't look like an OpenAI key (it starts with 'sk-').")
             return False
         if len(k) < 16:
             err.config(text="That key looks too short — double-check it.")

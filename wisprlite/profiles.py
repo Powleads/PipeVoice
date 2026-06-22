@@ -47,7 +47,8 @@ FG = "#e5e7eb"
 MUTED = "#94a3b8"
 ACCENT = "#e06c75"
 
-P_ENGINES = [("", "(app default)"), ("deepgram", "Deepgram"), ("openai", "OpenAI"), ("local", "Local")]
+P_ENGINES = [("", "(app default)"), ("gemini", "Gemini"), ("groq", "Groq"),
+             ("deepgram", "Deepgram"), ("local", "Local")]
 P_OUTPUTS = [("type", "Type"), ("paste", "Paste"), ("clipboard", "Clipboard")]
 P_STYLES = [("", "(app default)"), ("tidy", "Tidy — clean up"), ("prompt", "Prompt — for AI tools"), ("custom", "Custom…")]
 
@@ -145,6 +146,31 @@ def main() -> None:
     tk.Label(head, text="Give an app its own behaviour. Terminal: raw + Enter. Chat: polished + auto-send.\n"
                         "Editor: no AI cleanup. Search your open apps, or Browse to pick any program.",
              bg=BG, fg=MUTED, font=("Segoe UI", 9), justify="left").pack(anchor="w", pady=(5, 0))
+
+    # Live readout of the focused app's exe — the exact string a profile matches on.
+    # Skips our own windows + the shell, so switching to your target app and back
+    # keeps showing that app (not this editor).
+    focus_var = tk.StringVar(value="Focused app:  detecting…")
+    tk.Label(head, textvariable=focus_var, bg=BG, fg="#98c379",
+             font=("Consolas", 9, "bold")).pack(anchor="w", pady=(11, 0))
+    tk.Label(head, text="↑ click into the app you want, and this shows the exact name to match on.",
+             bg=BG, fg=MUTED, font=("Segoe UI", 8)).pack(anchor="w")
+    _seen = {"exe": ""}
+
+    def _poll_focus():
+        try:
+            exe = (foreground.detect().get("exe") or "")
+            if exe and exe not in foreground._NOISE_EXES:
+                _seen["exe"] = exe
+            focus_var.set(f"Focused app:  {_seen['exe'] or '—'}")
+        except Exception:
+            pass
+        try:
+            root.after(900, _poll_focus)
+        except Exception:
+            pass
+
+    root.after(400, _poll_focus)
 
     footer = tk.Frame(root, bg=BG, padx=22, pady=12)
     footer.pack(side="bottom", fill="x")
