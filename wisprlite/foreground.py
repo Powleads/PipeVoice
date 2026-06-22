@@ -11,6 +11,41 @@ from __future__ import annotations
 import ctypes
 from ctypes import wintypes
 
+
+def _init_prototypes() -> None:
+    """Declare restype/argtypes so 64-bit HWNDs and handles aren't truncated to a
+    32-bit int. Without this, GetForegroundWindow / OpenProcess return values get
+    clipped on Win64, the foreground exe comes back empty, and NO app profile ever
+    matches. Windows-only; silently skipped elsewhere."""
+    u = ctypes.windll.user32
+    k = ctypes.windll.kernel32
+    u.GetForegroundWindow.restype = wintypes.HWND
+    u.GetForegroundWindow.argtypes = []
+    u.GetWindowThreadProcessId.restype = wintypes.DWORD
+    u.GetWindowThreadProcessId.argtypes = [wintypes.HWND, ctypes.POINTER(wintypes.DWORD)]
+    u.GetWindowTextLengthW.restype = ctypes.c_int
+    u.GetWindowTextLengthW.argtypes = [wintypes.HWND]
+    u.GetWindowTextW.restype = ctypes.c_int
+    u.GetWindowTextW.argtypes = [wintypes.HWND, wintypes.LPWSTR, ctypes.c_int]
+    u.GetClassNameW.restype = ctypes.c_int
+    u.GetClassNameW.argtypes = [wintypes.HWND, wintypes.LPWSTR, ctypes.c_int]
+    u.IsWindowVisible.restype = wintypes.BOOL
+    u.IsWindowVisible.argtypes = [wintypes.HWND]
+    u.EnumWindows.restype = wintypes.BOOL
+    k.OpenProcess.restype = wintypes.HANDLE
+    k.OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
+    k.QueryFullProcessImageNameW.restype = wintypes.BOOL
+    k.QueryFullProcessImageNameW.argtypes = [
+        wintypes.HANDLE, wintypes.DWORD, wintypes.LPWSTR, ctypes.POINTER(wintypes.DWORD)]
+    k.CloseHandle.restype = wintypes.BOOL
+    k.CloseHandle.argtypes = [wintypes.HANDLE]
+
+
+try:
+    _init_prototypes()
+except Exception:
+    pass  # non-Windows / no ctypes.windll — per-call try/except still guards
+
 # window classes that mean "no app text target" (desktop / taskbar / start menu)
 _SHELL_CLASSES = {
     "Progman", "WorkerW", "Shell_TrayWnd", "Shell_SecondaryTrayWnd",

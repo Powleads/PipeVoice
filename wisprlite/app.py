@@ -63,7 +63,20 @@ class App:
     def _build_engine(self, name: str | None = None):
         name = name or self.cfg.engine
         vocab = (self.cfg.vocabulary or "").strip()
-        if name == "openai":
+        lang = (self.cfg.language or "").split("-")[0] or None
+        if name == "gemini":
+            from .engines.gemini_engine import GeminiEngine
+
+            if not config.gemini_key():
+                raise RuntimeError("GEMINI_API_KEY is not set")
+            return GeminiEngine(model=self.cfg.gemini_model, language=lang, prompt=vocab)
+        if name == "groq":
+            from .engines.groq_engine import GroqEngine
+
+            if not config.groq_key():
+                raise RuntimeError("GROQ_API_KEY is not set")
+            return GroqEngine(model=self.cfg.groq_model, language=lang, prompt=vocab)
+        if name == "openai":  # legacy: dropped from the UI, kept for existing configs
             from .engines.openai_engine import OpenAIEngine
 
             if not config.openai_key():
@@ -596,9 +609,9 @@ class App:
         old, new = self.cfg, config.Config.load()
         self.cfg = new  # hotkey/mode/output read live via lambdas
 
-        engine_keys = ("engine", "openai_model", "deepgram_model",
-                       "local_model_size", "local_device", "local_compute_type",
-                       "language", "device", "vocabulary",
+        engine_keys = ("engine", "gemini_model", "groq_model", "openai_model",
+                       "deepgram_model", "local_model_size", "local_device",
+                       "local_compute_type", "language", "device", "vocabulary",
                        "deepgram_finish_timeout")
         if any(getattr(old, k) != getattr(new, k) for k in engine_keys):
             self._engines = {}

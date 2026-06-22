@@ -26,6 +26,7 @@ WARN = "#e5c07b"
 OPENAI_URL = "https://platform.openai.com/api-keys"
 DEEPGRAM_URL = "https://console.deepgram.com/"
 GEMINI_URL = "https://aistudio.google.com/apikey"
+GROQ_URL = "https://console.groq.com/keys"
 OLLAMA_URL = "https://ollama.com/download"
 
 
@@ -81,7 +82,7 @@ def show_welcome() -> bool:
     # --- choose an engine (speed!) ---
     tk.Label(wrap, text="CHOOSE YOUR ENGINE — THIS DECIDES YOUR SPEED", bg=BG, fg=ACCENT,
              font=("Segoe UI", 9, "bold")).pack(anchor="w", pady=(22, 2))
-    tk.Label(wrap, text="Transcription is the slow part. Deepgram streams as you talk, so it feels instant.",
+    tk.Label(wrap, text="Gemini is free and set as your default — one key also does the AI polish. Switch anytime.",
              bg=BG, fg=MUTED, font=("Segoe UI", 9)).pack(anchor="w", pady=(0, 8))
 
     def engine_card(name, badge_text, badge_color, desc, url=None):
@@ -101,25 +102,28 @@ def show_welcome() -> bool:
         tk.Label(card, text=desc, bg=CARD, fg=MUTED,
                  font=("Segoe UI", 8)).pack(anchor="w", pady=(2, 0))
 
+    engine_card("Gemini", "FREE · DEFAULT", GOOD,
+                "Genuinely free, no credit card — and one key also powers the AI polish. Transcribes after you release.",
+                GEMINI_URL)
+    engine_card("Groq Whisper", "FAST · ACCURATE", GOOD,
+                "Real Whisper accuracy, ~9x cheaper than OpenAI and near-instant. Free dev tier.",
+                GROQ_URL)
     engine_card("Deepgram", "FASTEST · LIVE", GOOD,
-                "Text appears as you speak. Best for long dictation. Free to sign up, pennies a day.",
+                "Text appears as you speak. Best for long dictation. $200 free credit, no card — about 430 hours.",
                 DEEPGRAM_URL)
-    engine_card("OpenAI Whisper", "MOST ACCURATE", WARN,
-                "Top accuracy, but transcribes after you release — expect a short few-second wait.",
-                OPENAI_URL)
     engine_card("Local Whisper", "PRIVATE · FREE · NO KEY", MUTED,
                 "Runs entirely on your PC, nothing leaves the machine. Slowest — raise the model size for accuracy.")
 
     # --- optional polish ---
     tk.Label(wrap, text="OPTIONAL: AI POLISH", bg=BG, fg=ACCENT,
              font=("Segoe UI", 9, "bold")).pack(anchor="w", pady=(20, 2))
-    tk.Label(wrap, text="Tidies filler words, punctuation and casing. It's fast. Use your OpenAI key, a free",
+    tk.Label(wrap, text="Tidies filler words, punctuation and casing. It's fast. If you're on Gemini, your free",
              bg=BG, fg=MUTED, font=("Segoe UI", 9)).pack(anchor="w")
     polish = tk.Frame(wrap, bg=BG)
     polish.pack(anchor="w", pady=(0, 0))
     tk.Label(polish, text="Google Gemini key", bg=BG, fg=ACCENT, cursor="hand2",
              font=("Segoe UI", 9, "underline")).pack(side="left")
-    tk.Label(polish, text=" (most people have a Google account), or fully offline with ",
+    tk.Label(polish, text=" already does this (same key as transcription), or go fully offline with ",
              bg=BG, fg=MUTED, font=("Segoe UI", 9)).pack(side="left")
     tk.Label(polish, text="Ollama", bg=BG, fg=ACCENT, cursor="hand2",
              font=("Segoe UI", 9, "underline")).pack(side="left")

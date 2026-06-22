@@ -13,8 +13,9 @@ import threading
 
 from . import about, autostart, cleanup, config, history, winui
 
-ENGINES = [("deepgram", "Deepgram — fastest, live"),
-           ("openai", "OpenAI Whisper — accurate, slight wait"),
+ENGINES = [("gemini", "Gemini — free, one key does it all"),
+           ("groq", "Groq Whisper — fast & cheap, top accuracy"),
+           ("deepgram", "Deepgram — fastest, live streaming"),
            ("local", "Local Whisper — private & free, slower")]
 MODES = [("ptt", "Push-to-talk (hold)"), ("toggle", "Toggle (tap on/off)")]
 OUTPUTS = [("type", "Type keystrokes"), ("paste", "Clipboard + Ctrl+V")]
@@ -65,6 +66,7 @@ WARN = "#e5c07b"
 _URLS = {
     "deepgram": "https://console.deepgram.com/",
     "openai": "https://platform.openai.com/api-keys",
+    "groq": "https://console.groq.com/keys",
     "gemini": "https://aistudio.google.com/apikey",
     "openrouter": "https://openrouter.ai/keys",
     "ollama": "https://ollama.com/download",
@@ -140,18 +142,23 @@ def _build_guide(parent, wheel) -> None:
     head("Pick your engine — speed lives here")
     body("Transcription is the slow part; polish is fast. The engine you choose is the single "
          "biggest factor in how snappy Pipevoice feels.")
+    item("Gemini", "Genuinely free — no credit card. One Gemini key transcribes AND powers AI "
+         "polish, so you're fully set up at zero cost. Transcribes after you release.",
+         badge="FREE · DEFAULT", badge_color=GOOD)
+    item("Groq Whisper", "Real Whisper accuracy at ~9x lower cost than OpenAI, and so fast it "
+         "feels near-instant. Free dev tier. Great if you want top accuracy cheaply.",
+         badge="FAST · ACCURATE", badge_color=GOOD)
     item("Deepgram", "Streams text as you talk, so it feels instant. Best for long dictation. "
-         "Free to sign up, costs pennies a day.", badge="FASTEST · LIVE", badge_color=GOOD)
-    item("OpenAI Whisper", "The most accurate option, but it transcribes after you release, so "
-         "expect a short few-second wait on longer clips.", badge="MOST ACCURATE", badge_color=WARN)
+         "$200 free credit on signup (no card) — about 430 hours.", badge="FASTEST · LIVE", badge_color=GOOD)
     item("Local Whisper", "Runs entirely on your PC — nothing leaves the machine, no key needed. "
          "It is the slowest, especially on bigger models. Start on base.en to test, then raise the "
          "model size to medium.en for much better accuracy if your PC can handle it.",
          badge="PRIVATE · FREE", badge_color=MUTED)
-    body("Rule of thumb: want it fast? Use Deepgram. Want fully private and free? Use Local Whisper "
-         "and bump the model size.")
-    link("Get a free Deepgram key  ↗", "deepgram")
-    link("Get an OpenAI key  ↗", "openai")
+    body("Rule of thumb: want free with zero setup? Use Gemini. Want top accuracy cheap? Groq. "
+         "Want words to stream as you talk? Deepgram. Fully private/offline? Local Whisper.")
+    link("Get a free Gemini key  ↗", "gemini")
+    link("Get a free Groq key  ↗", "groq")
+    link("Get a Deepgram key ($200 free)  ↗", "deepgram")
 
     head("Polish (Flow mode) — optional")
     body("Cleans up filler words, punctuation and casing after transcription. It is fast — the wait "
@@ -353,7 +360,12 @@ def main(first_run: bool = False) -> None:
                      wraplength=470, justify="left").pack(anchor="w", padx=(25, 0), pady=(3, 0))
 
     # --- values ---
-    engine_var = tk.StringVar(value=dict(ENGINES).get(cfg.engine, ENGINES[0][1]))
+    # Show the current engine even if it's a legacy/hidden one (e.g. "openai"),
+    # so saving settings never silently switches an existing user to the default.
+    engine_opts = list(ENGINES)
+    if cfg.engine not in dict(engine_opts):
+        engine_opts.append((cfg.engine, f"{cfg.engine} (current)"))
+    engine_var = tk.StringVar(value=dict(engine_opts).get(cfg.engine, engine_opts[0][1]))
     mode_var = tk.StringVar(value=dict(MODES).get(cfg.mode, MODES[0][1]))
     output_var = tk.StringVar(value=dict(OUTPUTS).get(cfg.output_mode, OUTPUTS[0][1]))
     hotkey_var = tk.StringVar(value=cfg.hotkey)
@@ -362,6 +374,8 @@ def main(first_run: bool = False) -> None:
     devices = _input_devices()
     dev_label = next((lbl for lbl, val in devices if val == cfg.device), devices[0][0])
     device_var = tk.StringVar(value=dev_label)
+    gemini_model_var = tk.StringVar(value=cfg.gemini_model)
+    groq_model_var = tk.StringVar(value=cfg.groq_model)
     oai_var = tk.StringVar(value=cfg.openai_model)
     dg_var = tk.StringVar(value=cfg.deepgram_model)
     local_var = tk.StringVar(value=cfg.local_model_size)
@@ -371,6 +385,7 @@ def main(first_run: bool = False) -> None:
     dg_key_var = tk.StringVar()
     gem_key_var = tk.StringVar()
     or_key_var = tk.StringVar()
+    groq_key_var = tk.StringVar()
     ai_cleanup_var = tk.BooleanVar(value=cfg.ai_cleanup)
     cleanup_var = tk.StringVar(value=dict(CLEANUP_PROVIDERS).get(cfg.cleanup_provider, CLEANUP_PROVIDERS[0][1]))
     cleanup_model_var = tk.StringVar(value=cfg.cleanup_model)
@@ -401,8 +416,8 @@ def main(first_run: bool = False) -> None:
 
     # --- General ---
     c = card("General", "How Pipevoice listens, and where your words go.")
-    combo(row(c, "Engine", "Deepgram streams live (fastest). Local and OpenAI transcribe after you release."),
-          engine_var, [l for _, l in ENGINES])
+    combo(row(c, "Engine", "Gemini is free (one key also does AI polish). Groq is fast, accurate Whisper. Deepgram streams live. Local is offline."),
+          engine_var, [l for _, l in engine_opts])
     combo(row(c, "Mode", "Push-to-talk holds the key; toggle taps it on and off."),
           mode_var, [l for _, l in MODES])
     combo(row(c, "Output", "Type the keystrokes, or paste from the clipboard."),
@@ -470,7 +485,8 @@ def main(first_run: bool = False) -> None:
 
     # --- Models ---
     c = card("Models", "Per-engine model names. The defaults are good for most people.")
-    entry(row(c, "OpenAI model"), oai_var, width=22)
+    entry(row(c, "Gemini model", "flash-lite is free & fast; try a Flash model for more accuracy."), gemini_model_var, width=22)
+    entry(row(c, "Groq model", "whisper-large-v3-turbo is fast; whisper-large-v3 is a touch more accurate."), groq_model_var, width=22)
     entry(row(c, "Deepgram model"), dg_var, width=22)
     combo(row(c, "Local model size", "Bigger is more accurate but slower."), local_var, LOCAL_SIZES)
     combo(row(c, "Local: device", "Auto picks GPU if available, else CPU."),
@@ -484,9 +500,10 @@ def main(first_run: bool = False) -> None:
     def key_row(name, var, present):
         entry(row(c, name + " key", "Saved" if present else "Not set"), var, width=26, show="•")
 
-    key_row("OpenAI", oai_key_var, config.openai_key())
-    key_row("Deepgram", dg_key_var, config.deepgram_key())
     key_row("Gemini", gem_key_var, config.gemini_key())
+    key_row("Groq", groq_key_var, config.groq_key())
+    key_row("Deepgram", dg_key_var, config.deepgram_key())
+    key_row("OpenAI", oai_key_var, config.openai_key())
     key_row("OpenRouter", or_key_var, config.openrouter_key())
 
     # --- Polish & text ---
@@ -573,13 +590,15 @@ def main(first_run: bool = False) -> None:
             cfg.profiles = config.Config.load().profiles
         except Exception:
             pass
-        cfg.engine = value_for(engine_var, ENGINES)
+        cfg.engine = value_for(engine_var, engine_opts)
         cfg.mode = value_for(mode_var, MODES)
         cfg.output_mode = value_for(output_var, OUTPUTS)
         cfg.hotkey = hotkey_var.get().strip() or "right ctrl"
         cfg.clipboard_hotkey = clip_hotkey_var.get().strip()
         cfg.language = value_for(lang_var, LANGUAGES)
         cfg.device = dict((lbl, val) for lbl, val in devices).get(device_var.get(), "")
+        cfg.gemini_model = gemini_model_var.get().strip() or "gemini-3.1-flash-lite"
+        cfg.groq_model = groq_model_var.get().strip() or "whisper-large-v3-turbo"
         cfg.openai_model = oai_var.get().strip() or "whisper-1"
         cfg.deepgram_model = dg_var.get().strip() or "nova-2"
         cfg.local_model_size = local_var.get().strip() or "base.en"
@@ -622,6 +641,8 @@ def main(first_run: bool = False) -> None:
             config.save_api_key("DEEPGRAM_API_KEY", dg_key_var.get())
         if gem_key_var.get().strip():
             config.save_api_key("GEMINI_API_KEY", gem_key_var.get())
+        if groq_key_var.get().strip():
+            config.save_api_key("GROQ_API_KEY", groq_key_var.get())
         if or_key_var.get().strip():
             config.save_api_key("OPENROUTER_API_KEY", or_key_var.get())
         try:

@@ -55,13 +55,15 @@ _load_env()
 
 @dataclass
 class Config:
-    engine: str = "deepgram"        # openai | deepgram | local
+    engine: str = "gemini"          # gemini | groq | deepgram | local (openai = legacy)
     mode: str = "ptt"               # ptt | toggle
     hotkey: str = "ctrl+\\"          # any key/combo, e.g. "ctrl+alt", "f9"
     clipboard_hotkey: str = "right ctrl+right shift"  # 2nd hotkey -> dictate to clipboard (no typing); safe to hold. "" = off
     output_mode: str = "type"       # type | paste
     language: str = ""              # "" = auto-detect; else ISO code e.g. "en"
     device: str = ""                # mic index or name substring; "" = default
+    gemini_model: str = "gemini-3.1-flash-lite"   # free tier; one key also powers AI polish
+    groq_model: str = "whisper-large-v3-turbo"    # real Whisper, ~9x cheaper than OpenAI
     openai_model: str = "whisper-1"
     deepgram_model: str = "nova-3"
     local_model_size: str = "base.en"
@@ -178,6 +180,10 @@ def deepgram_key() -> str:
 
 def gemini_key() -> str:
     return os.getenv("GEMINI_API_KEY", "").strip()
+
+
+def groq_key() -> str:
+    return os.getenv("GROQ_API_KEY", "").strip()
 
 
 def openrouter_key() -> str:

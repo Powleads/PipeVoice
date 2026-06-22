@@ -74,7 +74,8 @@ class Tray:
             Item("Pipevoice", None, enabled=False),
             Menu.SEPARATOR,
             Item("Engine", Menu(
-                engine_item("openai", "OpenAI Whisper  (cloud)"),
+                engine_item("gemini", "Gemini  (free)"),
+                engine_item("groq", "Groq Whisper  (fast, cheap)"),
                 engine_item("deepgram", "Deepgram  (streaming)"),
                 engine_item("local", "Local Whisper  (offline)"),
             )),
