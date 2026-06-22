@@ -353,8 +353,13 @@ class App:
             return fut.result(timeout=max(1, int(timeout)))
         except concurrent.futures.TimeoutError:
             fut.cancel()
-            self._pending_agent_listen = None
-            self.overlay.hide()
+            # If the user is mid-utterance when we time out, KEEP _pending_agent_listen
+            # set so _finish() routes (and discards) that utterance instead of typing it
+            # into the foreground app. If nothing is in flight, disarm so the next normal
+            # dictation behaves normally.
+            if not self._busy.locked():
+                self._pending_agent_listen = None
+                self.overlay.hide()
             return {"status": "timeout", "text": ""}
 
     def _agent_listen_hands_free(self, prompt="", timeout=45) -> dict:
