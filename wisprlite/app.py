@@ -48,6 +48,12 @@ class App:
             is_paused=lambda: self.paused,
         )
 
+        self._armed_voice = None      # a Voice armed by the picker, consumed by the next utterance
+        self._voice_mgrs = []         # dedicated voice HotkeyManagers
+        self._picker_mgr = None       # the picker HotkeyManager
+        self._picker_open = False
+        self._build_voice_hotkeys()
+
         self._engines = {}            # per-engine cache (name -> engine), for per-app profiles
         self._session = None
         self._clipboard_only = False
@@ -125,17 +131,106 @@ class App:
 
         threading.Thread(target=work, daemon=True).start()
 
+    # ---- voice hotkeys + picker -------------------------------------------
+    def _build_voice_hotkeys(self) -> None:
+        # stop any existing ones first (called on init and on config reload)
+        for m in self._voice_mgrs:
+            try: m.stop()
+            except Exception: pass
+        if self._picker_mgr:
+            try: self._picker_mgr.stop()
+            except Exception: pass
+        self._voice_mgrs = []
+        self._picker_mgr = None
+        for entry in (self.cfg.voice_hotkeys or []):
+            hk = (entry.get("hotkey") or "").strip()
+            vn = (entry.get("voice") or "").strip()
+            if not hk or not vn:
+                continue
+            mgr = HotkeyManager(
+                get_hotkey=(lambda h=hk: h),
+                get_mode=lambda: self.cfg.mode,
+                on_start=(lambda v=vn: self._on_start(voice=v)),
+                on_stop=self._on_stop,
+                is_paused=lambda: self.paused,
+            )
+            self._voice_mgrs.append(mgr)
+        pk = (self.cfg.voice_picker_hotkey or "").strip()
+        if pk:
+            self._picker_mgr = HotkeyManager(
+                get_hotkey=(lambda h=pk: h),
+                get_mode=lambda: "toggle",          # fire once on press, not hold-to-talk
+                on_start=self._open_picker,
+                on_stop=lambda: None,
+                is_paused=lambda: self.paused,
+            )
+
+    def _start_voice_hotkeys(self) -> None:
+        for m in self._voice_mgrs:
+            m.start()
+        if self._picker_mgr:
+            self._picker_mgr.start()
+
+    def _open_picker(self) -> None:
+        if self._picker_open:
+            return
+        names = []
+        try:
+            from . import voices
+            names = voices.names(self.cfg)
+        except Exception:
+            names = []
+        if not names:
+            return
+        self._picker_open = True
+        self.overlay.show_picker(names[:9], "Pick a voice (1-9, Esc)")
+        threading.Thread(target=self._picker_loop, args=(names[:9],), daemon=True).start()
+
+    def _picker_loop(self, names: list) -> None:
+        import keyboard
+        deadline = time.time() + 8.0     # auto-cancel after 8s
+        chosen = None
+        try:
+            while time.time() < deadline and self._picker_open:
+                if keyboard.is_pressed("esc"):
+                    break
+                hit = False
+                for i, nm in enumerate(names, start=1):
+                    if keyboard.is_pressed(str(i)):
+                        chosen = nm; hit = True; break
+                if hit:
+                    break
+                time.sleep(0.03)
+        except Exception:
+            pass
+        self._picker_open = False
+        if chosen:
+            self._armed_voice = chosen
+            self.overlay.set_state("done", f"Voice: {chosen} — talk now")
+            # auto-disarm if not used within 12s
+            def _disarm(name=chosen):
+                if self._armed_voice == name:
+                    self._armed_voice = None
+            threading.Timer(12.0, _disarm).start()
+        else:
+            self.overlay.hide()
+
     # ---- hotkey callbacks (run on the hotkey thread) ----------------------
-    def _on_start(self, clipboard: bool = False) -> None:
+    def _on_start(self, clipboard: bool = False, voice: str | None = None) -> None:
         if not self._busy.acquire(blocking=False):
             return  # still finishing the previous utterance
         self._clipboard_only = clipboard
         # Capture the focused app NOW (before our overlay shows) and resolve a
         # per-app profile into per-utterance overrides. Never mutates self.cfg.
+        voice = voice or self._armed_voice     # picker arms a one-shot voice
+        self._armed_voice = None
         try:
-            from . import foreground, profiles
+            from . import foreground, profiles, voices
             self._fg_ctx = foreground.detect()
-            self._active = profiles.resolve(self.cfg, self._fg_ctx)
+            if voice:
+                self._active = voices.resolve(self.cfg, voice)   # explicit Voice overrides any profile
+            else:
+                self._active = profiles.resolve(self.cfg, self._fg_ctx)
         except Exception:
             self._fg_ctx, self._active = {}, {}
         try:
@@ -572,6 +667,10 @@ class App:
         self._stop.set()
         self.stop_mcp_bridge()
         self.hotkeys.stop()
+        for m in self._voice_mgrs:
+            m.stop()
+        if self._picker_mgr:
+            self._picker_mgr.stop()
         self.overlay.stop()
         self.tray.stop()
 
@@ -627,6 +726,11 @@ class App:
         elif not new.overlay:
             self.overlay.hide()
 
+        if (new.voice_hotkeys != old.voice_hotkeys
+                or new.voice_picker_hotkey != old.voice_picker_hotkey):
+            self._build_voice_hotkeys()
+            self._start_voice_hotkeys()
+
         self.tray.update()
 
     # ---- helpers ----------------------------------------------------------
@@ -679,6 +783,7 @@ class App:
         self.tray.start()
         self.hotkeys.start()
         self.clip_hotkeys.start()
+        self._start_voice_hotkeys()
         if self.cfg.mcp_enabled:
             self.start_mcp_bridge()
         self._prewarm()
