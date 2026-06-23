@@ -7,11 +7,14 @@ and are never written to disk.
 
 from __future__ import annotations
 
+import copy
 import json
 import os
 import sys
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
+
+from .voices import STARTER_VOICES
 
 APP_NAME = "Pipevoice"
 
@@ -82,6 +85,9 @@ class Config:
     vocabulary: str = ""            # comma-separated terms to bias recognition
     speech_notes: str = ""          # free text about the user's accent / speech, fed to AI cleanup
     replacements: dict = field(default_factory=dict)  # {wrong: right} post-fixes
+    voices: list = field(default_factory=lambda: copy.deepcopy(STARTER_VOICES))
+    voice_hotkeys: list = field(default_factory=list)   # [{"hotkey": "...", "voice": "name"}]
+    voice_picker_hotkey: str = ""                        # "" = picker off
     key_prompt_skipped_for: str = ""  # engine the user dismissed the key prompt for (stops re-nagging)
     voice_commands: bool = True       # spoken commands: "new line", "scratch that", "send it"
     history_enabled: bool = True      # keep a local dictation history (history.jsonl)
