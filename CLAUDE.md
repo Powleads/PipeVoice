@@ -30,6 +30,10 @@ There is **no test suite, linter, or formatter** configured — don't look for `
 
 ## Architecture (desktop app, `wisprlite/wisprlite/`)
 
+> **Full reference: [`ARCHITECTURE.md`](ARCHITECTURE.md)** — complete module map, the per-utterance
+> flow walk-through, engines/Voices/profiles, the Tk UI + shared theme, build/release, and a
+> "Developing in this repo" section (incl. the Xvfb render-screenshot loop for verifying the UI).
+
 `app.py` is the orchestrator and the state machine: **idle → recording → transcribing**. It wires
 the hotkey to record → transcribe → type, and owns the tray icon and overlay. The README's
 "Architecture" section maps every module; the load-bearing design decisions are:
