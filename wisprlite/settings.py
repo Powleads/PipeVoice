@@ -188,13 +188,22 @@ def _build_guide(parent, wheel) -> None:
     tk.Label(g, text="", bg=BG).pack(pady=6)  # bottom breathing room
 
 
-def _build_voices_tab(parent, show_tab=None) -> None:
+def _build_voices_tab(parent, show_tab=None, wheel=None) -> None:
     """Flagship 'Voices & App Profiles' page: explain the feature, launch the editors."""
     import tkinter as tk
     from tkinter import ttk
 
-    wrap = tk.Frame(parent, bg=BG, padx=34, pady=28)
-    wrap.pack(fill="both", expand=True)
+    # scrollable (mirrors the other content tabs) so nothing is clipped on short screens
+    canvas = tk.Canvas(parent, bg=BG, highlightthickness=0)
+    sbar = ttk.Scrollbar(parent, orient="vertical", command=canvas.yview)
+    canvas.configure(yscrollcommand=sbar.set)
+    sbar.pack(side="right", fill="y")
+    canvas.pack(side="left", fill="both", expand=True)
+    wrap = tk.Frame(canvas, bg=BG, padx=34, pady=28)
+    canvas.create_window((0, 0), window=wrap, anchor="nw")
+    wrap.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+    if wheel:
+        wheel(canvas)
 
     tk.Label(wrap, text="VOICES & APP PROFILES", bg=BG, fg=ACCENT,
              font=("Segoe UI", 10, "bold")).pack(anchor="w")
@@ -328,7 +337,7 @@ def main(first_run: bool = False) -> None:
     history.build(tab_history, root, _wheel)
     _build_guide(tab_guide, _wheel)
     about.build(tab_about, root, _wheel)
-    _build_voices_tab(tab_voices, _show_tab)
+    _build_voices_tab(tab_voices, _show_tab, _wheel)
     _show_tab(os.getenv("PV_TAB") or "Settings")  # PV_TAB is a render/test seam
     DIV = "#272b37"
 
